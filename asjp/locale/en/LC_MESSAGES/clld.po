@@ -1,0 +1,35 @@
+# English translations for PROJECT.
+# Copyright (C) 2013 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2013-12-20 10:34+0100\n"
+"PO-Revision-Date: 2013-12-20 10:34+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 1.3\n"
+
+#: asjp/__init__.py:10
+msgid "Contribution"
+msgstr "Wordlist"
+
+#: asjp/__init__.py:11
+msgid "Contributions"
+msgstr "Wordlists"
+
+#: asjp/__init__.py:12
+msgid "Parameter"
+msgstr "Meaning"
+
+#: asjp/__init__.py:13
+msgid "Parameters"
+msgstr "Meanings"
+
