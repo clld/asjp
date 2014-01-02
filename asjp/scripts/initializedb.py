@@ -5,48 +5,51 @@ import codecs
 import json
 import re
 
+import transaction
 from sqlalchemy import create_engine
+from sqlalchemy.orm import joinedload_all
 from clld.scripts.util import initializedb, Data
 from clld.db.meta import DBSession
 from clld.db.models import common
+from clld.db.util import page_query
 
 import asjp
 from asjp import models
-from asjp.scripts.util import parse, MEANINGS, parse_sources, asjp_name
+from asjp.scripts.util import parse_sources, asjp_name
+
+
+def parse(fp):
+    wordlist = None
+
+    for line in fp:
+        m = models.LANGUAGE_LINE_PATTERN.match(line)
+        if m:
+            if wordlist:
+                yield wordlist
+            wordlist = [line]
+        else:
+            if wordlist:
+                wordlist.append(line)
+
+    if wordlist:
+        yield wordlist
 
 
 GC = create_engine('postgresql://robert@/glottolog3')
 
+#
+# TODO: include macroarea info from glottolog!
+#
 glottocodes = {}
 for row in GC.execute('select ll.hid, l.id from language as l, languoid as ll where ll.pk = l.pk'):
     if row[0] and len(row[0]) == 3:
         glottocodes[row[0]] = row[1]
 
 
-def add_codes(data, l, isostring):
-    if not isostring:
-        return
-
-    if isostring in data['Identifier']:
-        iso = data['Identifier'][isostring]
-    else:
-        iso = data.add(
-            common.Identifier, isostring,
-            id=isostring, type=common.IdentifierType.iso.value, name=isostring)
-    DBSession.add(common.LanguageIdentifier(identifier=iso, language=l))
-
-    if isostring in glottocodes:
-        gc = glottocodes[isostring]
-        if gc in data['Identifier']:
-            gc = data['Identifier'][gc]
-        else:
-            gc = data.add(
-                common.Identifier, gc,
-                id=gc, type=common.IdentifierType.glottolog.value, name=gc)
-        DBSession.add(common.LanguageIdentifier(identifier=gc, language=l))
-
-
 def main(args):
+    with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
+        wordlists = ['\n'.join(lines) for lines in parse(fp)]
+
     sources = args.data_file('sources.json')
     if sources.exists():
         sources = json.load(open(sources))
@@ -103,61 +106,24 @@ def main(args):
         contributor = data.add(common.Contributor, spec[0], id=spec[0], name=spec[1])
         DBSession.add(common.Editor(dataset=dataset, ord=i + 1, contributor=contributor))
 
-    for id_ in sorted(MEANINGS.keys()):
-        data.add(common.Parameter, id_, id=str(id_), name=MEANINGS[id_])
-
-    with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
-        wordlists = list(parse(fp))
+    for id_ in sorted(models.MEANINGS_ALL.keys()):
+        data.add(
+            models.Meaning, id_,
+            id=str(id_), name=models.MEANINGS_ALL[id_], core=id_ in models.MEANINGS)
 
     # keep a mapping of iso codes to wordlists to associate sources lateron
     langs_by_iso_code = {}
-
     for l in wordlists:
-        if l['name'] in data['Language']:
-            lang = data['Language'][l['name']]
-            if lang.latitude != l['latitude'] or lang.longitude != l['longitude']:
-                print l['name'], l['contribution']
-                continue
-        else:
-            lang = data.add(
-                common.Language, l['name'],
-                id=l['name'],
-                name=' '.join(s.capitalize() for s in l['name'].split('_')),
-                latitude=l['latitude'],
-                longitude=l['longitude'],
-                jsondata=dict(number_of_speakers=l['population']))
-            add_codes(data, lang, l['iso'])
-            #
-            # TODO: add WALS identifier!?
-            #
+        lang = models.Doculect.from_txt(l)
+        lang.code_glottolog = glottocodes.get(lang.code_iso)
+        lang.add_codes()
+        data.add(models.Doculect, lang.id, _obj=lang)
 
-        contrib = data.add(
-            models.Wordlist, l['contribution'],
-            id=l['contribution'],
-            language=lang,
-            name=l['contribution'] + ' wordlist')
-
-        if l['iso']:
-            if l['iso'] in langs_by_iso_code:
-                langs_by_iso_code[l['iso']].append(lang)
+        if lang.code_iso:
+            if lang.code_iso in langs_by_iso_code:
+                langs_by_iso_code[lang.code_iso].append(lang)
             else:
-                langs_by_iso_code[l['iso']] = [lang]
-
-        for wid, wdata in l['words'].items():
-            words, comment = wdata
-            vsid = '%s-%s' % (l['contribution'], wid)
-            vs = data.add(
-                common.ValueSet, vsid,
-                id=vsid,
-                description=comment,
-                language=lang,
-                contribution=contrib,
-                parameter=data['Parameter'][wid])
-
-            for i, word in enumerate(words):
-                id_ = '%s-%s' % (vsid, i + 1)
-                word, loan = word
-                data.add(models.Word, id_, id=id_, name=word, valueset=vs, loan=loan)
+                langs_by_iso_code[lang.code_iso] = [lang]
 
     ls = {}
     cc = {}
@@ -176,25 +142,30 @@ def main(args):
             s = data.add(common.Source, source['source'], id=str(i + 1), name=source['source'])
 
         langs = []
-        if source.get('asjp_name') in data['Language']:
-            langs = [data['Language'][source['asjp_name']]]
-            #.sources.append(s)
+        if source.get('asjp_name') in data['Doculect']:
+            langs = [data['Doculect'][source['asjp_name']]]
         elif source.get('iso') in langs_by_iso_code:
             langs = langs_by_iso_code[source['iso']]
-        elif source.get('name') and asjp_name(source.get('name', '')) in data['Language']:
-            langs = [data['Language'][asjp_name(source['name'])]]
+        elif source.get('name') and asjp_name(source.get('name', '')) in data['Doculect']:
+            langs = [data['Doculect'][asjp_name(source['name'])]]
         for lang in set(langs):
             if (lang.id, s.id) not in ls:
                 lang.sources.append(s)
                 ls[(lang.id, s.id)] = 1
-            for contribution in lang.wordlists:
-                for contributor in set(contributors):
-                    if (contributor.id, contribution.id) not in cc:
-                        DBSession.add(common.ContributionContributor(
-                            contribution=contribution,
-                            contributor=contributor))
-                        cc[(contributor.id, contribution.id)] = 1
+            contribution = lang.wordlist
+            for contributor in set(contributors):
+                if (contributor.id, contribution.id) not in cc:
+                    DBSession.add(common.ContributionContributor(
+                        contribution=contribution,
+                        contributor=contributor))
+                    cc[(contributor.id, contribution.id)] = 1
     print len(wordlists)
+
+    #print models.txt_header()
+    #previous = None
+    #for doculect in DBSession.query(models.Doculect).order_by(models.Doculect.pk).limit(3):
+    #    print doculect.to_txt(previous=previous)
+    #    previous = doculect
 
 
 def prime_cache(args):
@@ -202,6 +173,15 @@ def prime_cache(args):
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
     """
+    q = DBSession.query(models.Doculect)\
+        .order_by(models.Doculect.pk)\
+        .options(
+            joinedload_all(common.Language.valuesets, common.ValueSet.values),
+            joinedload_all(common.Language.valuesets, common.ValueSet.parameter))
+    previous = None
+    for doculect in page_query(q, n=100, verbose=True, commit=True):
+        doculect.txt = doculect.to_txt(previous=previous)
+        previous = doculect
 
 
 if __name__ == '__main__':

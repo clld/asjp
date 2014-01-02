@@ -12,15 +12,16 @@ ${request.get_datatable('values', h.models.Value, language=ctx).render()}
     ${util.codes(ctx)}
     </div>
     <br clear="both" />
+    <%util:well title="Compiler">
+        ${h.linked_contributors(request, ctx.wordlist)}
+        ${h.cite_button(request, ctx.wordlist)}
+    </%util:well>
     % if ctx.latitude is not None:
     <%util:well>
         ${request.map.render()}
         ${h.format_coordinates(ctx)}
     </%util:well>
     % endif
-    <%util:well title="Wordlists">
-        ${util.stacked_links(ctx.wordlists)}
-    </%util:well>
     <%util:well title="Sources">
         ${util.sources_list(sorted(list(ctx.sources), key=lambda s: s.name))}
     </%util:well>

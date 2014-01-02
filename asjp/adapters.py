@@ -1,9 +1,13 @@
 from __future__ import unicode_literals
 
+from sqlalchemy.orm import joinedload_all
 from clld.db.meta import DBSession
 from clld.db.models.common import ValueSet, Language
+from clld.web.adapters.base import Representation, Index
 from clld.web.adapters.geojson import GeoJsonParameter, GeoJsonLanguages, pacific_centered_coordinates
 from clld.interfaces import IParameter, ILanguage, IIndex
+
+from asjp.models import txt_header, Doculect
 
 
 class GeoJsonMeaning(GeoJsonParameter):
@@ -46,6 +50,40 @@ class GeoJsonAllLanguages(GeoJsonLanguages):
         return pacific_centered_coordinates(language)
 
 
+class Wordlist(Representation):
+    mimetype = str('text/plain')
+    extension = str('txt')
+
+    def render(self, ctx, req):
+        return ctx.to_txt()
+
+
+class Wordlists(Index):
+    extension = str('txt')
+    mimetype = str('text/plain')
+
+    def render(self, ctx, req):
+        res = [txt_header()]
+
+        #
+        # TODO: render warning, if more than 1000 items would have matched.
+        #
+        ids = [d.pk for d in ctx.get_query(limit=1000)]
+
+        q = DBSession.query(Doculect)\
+            .filter(Doculect.pk.in_(ids))\
+            .options(
+                joinedload_all(Language.valuesets, ValueSet.values),
+                joinedload_all(Language.valuesets, ValueSet.parameter))
+
+        for wordlist in q:
+            res.append(wordlist.to_txt())
+
+        return '\n'.join(res)
+
+
 def includeme(config):
     config.register_adapter(GeoJsonMeaning, IParameter)
     config.register_adapter(GeoJsonAllLanguages, ILanguage, IIndex)
+    config.register_adapter(Wordlists, ILanguage, IIndex)
+    config.register_adapter(Wordlist, ILanguage)
