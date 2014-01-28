@@ -4,14 +4,20 @@ import sys
 import codecs
 import json
 import re
+from collections import defaultdict
+import csv
 
+import xlwt
 import transaction
-from sqlalchemy import create_engine
 from sqlalchemy.orm import joinedload_all
-from clld.scripts.util import initializedb, Data
+from clld.scripts.util import (
+    initializedb, Data, add_language_codes, glottocodes_by_isocode,
+)
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.db.util import page_query
+from clld.util import slug
+from clld.lib.excel import hyperlink
 
 import asjp
 from asjp import models
@@ -35,20 +41,128 @@ def parse(fp):
         yield wordlist
 
 
-GC = create_engine('postgresql://robert@/glottolog3')
+def source2wordlist(args, data, sources):
+    revised = {}
+    for d in csv.DictReader(open(args.data_file('unmatched_revised.csv'))):
+        if d['match']:
+            revised[(d['wiki'], d['name'])] = d['match']
 
-#
-# TODO: include macroarea info from glottolog!
-#
-glottocodes = {}
-for row in GC.execute('select ll.hid, l.id from language as l, languoid as ll where ll.pk = l.pk'):
-    if row[0] and len(row[0]) == 3:
-        glottocodes[row[0]] = row[1]
+    # slugs are unique except:
+    # WEMBAWEMBA WEMBA_WEMBA wembawemba
+    asjp_names = {}
+    by_iso = defaultdict(list)
+    for row in DBSession.query(models.Doculect.id, models.Doculect.code_iso):
+        s = slug(row[0])
+        if s in asjp_names:
+            print asjp_names[s], row[0], s
+        asjp_names[s] = row[0]
+        if row[1]:
+            by_iso[row[1]].append(row[0])
+
+    matched = {}
+
+    julia = 0
+    names = 0
+    iso = 0
+    notes = 0
+    missing = []
+    for source in sources:
+        sid = '%s-%s' % (source['href'], source['name'])
+
+        if (source['href'].split('/')[-1], source['name']) in revised:
+            julia += 1
+            matched[sid] = revised[(source['href'].split('/')[-1], source['name'])]
+            print sid, matched[sid]
+            continue
+
+        if slug(source['name']) in asjp_names:
+            names += 1
+            matched[sid] = asjp_names[slug(source['name'])]
+            continue
+        if slug(source.get('asjp_name', 'aaaaaaaaaaaaaa')) in asjp_names:
+            notes += 1
+            matched[sid] = asjp_names[slug(source.get('asjp_name', 'aaaaaaaaaaaaaa'))]
+            continue
+
+        if ',' in source['name']:
+            s = slug(' '.join(reversed(source['name'].split(','))))
+            if s in asjp_names:
+                names += 1
+                matched[sid] = asjp_names[s]
+                continue
+        if '(' in source['name']:
+            s = slug(' '.join(reversed(source['name'].split('('))))
+            if s in asjp_names:
+                names += 1
+                matched[sid] = asjp_names[s]
+                continue
+        if 'dialect' in source['name']:
+            s = slug(source['name'].replace('dialect', ''))
+            if s in asjp_names:
+                names += 1
+                matched[sid] = asjp_names[s]
+                continue
+        if source.get('asjp_name'):
+            s = slug(source['name'] + source['asjp_name']).replace('dialect', '')
+            if s in asjp_names:
+                names += 1
+                matched[sid] = asjp_names[s]
+                continue
+        if source.get('iso') in by_iso:
+            candidates = by_iso[source['iso']]
+            if len(candidates) == 1:
+                iso += 1
+                matched[sid] = candidates[0]
+                continue
+            #print source['name'], '----', source.get('notes'), '-->', candidates
+            missing.append((source, candidates))
+            continue
+        #print source['name'], '---iso:', source.get('iso'), '----', source.get('notes')
+        missing.append((source, []))
+
+    #
+    # TODO: add candidates (determined by iso code) for un-matched entries!
+    #
+    print names, 'from name'
+    print notes, 'from notes'
+    print iso, 'from iso'
+    print len(missing), 'missing'
+    print len(sources), '==', julia + names + notes + iso + len(missing)
+
+    wb = xlwt.Workbook()
+    ws = wb.add_sheet('Unmatched sources')
+
+    fields = ['wiki', 'name', 'notes', 'iso', 'source', 'candidates', 'match']
+    for i, col in enumerate(fields):
+        ws.write(0, i, col)
+
+    for j, item in enumerate(missing):
+        source, candidates = item
+        for i, col in enumerate(fields):
+            if col in ['name', 'notes', 'iso', 'source']:
+                value = source.get(col, '')
+            elif col == 'wiki':
+                value = hyperlink('https://lingweb.eva.mpg.de' + source['href'], source['href'].split('/')[-1])
+            elif col == 'candidates' and candidates:
+                value = ', '.join(candidates)
+            else:
+                value = ''
+            ws.write(j + 1, i, value)
+
+    with open(args.data_file('unmatched2.xls'), 'w') as fp:
+        wb.save(fp)
+
+    with open(args.data_file('matched.json'), 'w') as fp:
+        json.dump(matched, fp)
+
+    doculects_without_source = set(asjp_names.values()) - set(matched.values())
+    print len(doculects_without_source), 'without source'
+
+    return matched
 
 
 def main(args):
-    with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
-        wordlists = ['\n'.join(lines) for lines in parse(fp)]
+    glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
 
     sources = args.data_file('sources.json')
     if sources.exists():
@@ -58,6 +172,9 @@ def main(args):
         with open(sources, 'w') as fp:
             json.dump(res, fp)
         sources = res
+
+    with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
+        wordlists = ['\n'.join(lines) for lines in parse(fp)]
 
     data = Data()
 
@@ -125,6 +242,10 @@ def main(args):
             else:
                 langs_by_iso_code[lang.code_iso] = [lang]
 
+    #source2doculect = source2wordlist(args, data, sources)
+    with open(args.data_file('matched.json')) as fp:
+        source2doculect = json.load(fp)
+
     ls = {}
     cc = {}
     for i, source in enumerate(sources):
@@ -141,24 +262,31 @@ def main(args):
         else:
             s = data.add(common.Source, source['source'], id=str(i + 1), name=source['source'])
 
-        langs = []
-        if source.get('asjp_name') in data['Doculect']:
-            langs = [data['Doculect'][source['asjp_name']]]
-        elif source.get('iso') in langs_by_iso_code:
-            langs = langs_by_iso_code[source['iso']]
-        elif source.get('name') and asjp_name(source.get('name', '')) in data['Doculect']:
-            langs = [data['Doculect'][asjp_name(source['name'])]]
-        for lang in set(langs):
-            if (lang.id, s.id) not in ls:
-                lang.sources.append(s)
-                ls[(lang.id, s.id)] = 1
-            contribution = lang.wordlist
-            for contributor in set(contributors):
-                if (contributor.id, contribution.id) not in cc:
-                    DBSession.add(common.ContributionContributor(
-                        contribution=contribution,
-                        contributor=contributor))
-                    cc[(contributor.id, contribution.id)] = 1
+        sid = '%s-%s' % (source['href'], source['name'])
+        if sid in source2doculect:
+            if source2doculect[sid] not in data['Doculect']:
+                print "unknown doculect ID in source2doculect", source2doculect[sid]
+            else:
+                lang = data['Doculect'][source2doculect[sid]]
+
+        #langs = []
+        #if source.get('asjp_name') in data['Doculect']:
+        #    langs = [data['Doculect'][source['asjp_name']]]
+        #elif source.get('iso') in langs_by_iso_code:
+        #    langs = langs_by_iso_code[source['iso']]
+        #elif source.get('name') and asjp_name(source.get('name', '')) in data['Doculect']:
+        #    langs = [data['Doculect'][asjp_name(source['name'])]]
+        #for lang in set(langs):
+                if (lang.id, s.id) not in ls:
+                    lang.sources.append(s)
+                    ls[(lang.id, s.id)] = 1
+                contribution = lang.wordlist
+                for contributor in set(contributors):
+                    if (contributor.id, contribution.id) not in cc:
+                        DBSession.add(common.ContributionContributor(
+                            contribution=contribution,
+                            contributor=contributor))
+                        cc[(contributor.id, contribution.id)] = 1
     print len(wordlists)
 
     #print models.txt_header()
@@ -173,6 +301,7 @@ def prime_cache(args):
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
     """
+    return
     q = DBSession.query(models.Doculect)\
         .order_by(models.Doculect.pk)\
         .options(
@@ -182,6 +311,10 @@ def prime_cache(args):
     for doculect in page_query(q, n=100, verbose=True, commit=True):
         doculect.txt = doculect.to_txt(previous=previous)
         previous = doculect
+
+    #
+    # TODO: include macroarea info from glottolog!
+    #
 
 
 if __name__ == '__main__':

@@ -6,6 +6,7 @@ from clld.db.models.common import ValueSet, Language
 from clld.web.adapters.base import Representation, Index
 from clld.web.adapters.geojson import GeoJsonParameter, GeoJsonLanguages, pacific_centered_coordinates
 from clld.interfaces import IParameter, ILanguage, IIndex
+from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
 
 from asjp.models import txt_header, Doculect
 
@@ -66,9 +67,9 @@ class Wordlists(Index):
         res = [txt_header()]
 
         #
-        # TODO: render warning, if more than 1000 items would have matched.
+        # TODO: render warning, if more than 1500 items would have matched.
         #
-        ids = [d.pk for d in ctx.get_query(limit=1000)]
+        ids = [d.pk for d in ctx.get_query(limit=1500)]
 
         q = DBSession.query(Doculect)\
             .filter(Doculect.pk.in_(ids))\
@@ -82,8 +83,28 @@ class Wordlists(Index):
         return '\n'.join(res)
 
 
+class _GeoJsonSelectedLanguages(GeoJsonSelectedLanguages):
+    def get_coordinates(self, language):
+        return pacific_centered_coordinates(language)
+
+
+class MapView(Index):
+    extension = str('map.html')
+    mimetype = str('text/vnd.clld.map+html')
+    send_mimetype = str('text/html')
+    template = 'language/map_html.mako'
+
+    def template_context(self, ctx, req):
+        languages = list(ctx.get_query(limit=8000))
+        return {
+            'map': SelectedLanguagesMap(
+                ctx, req, languages, geojson_impl=_GeoJsonSelectedLanguages),
+            'languages': languages}
+
+
 def includeme(config):
     config.register_adapter(GeoJsonMeaning, IParameter)
     config.register_adapter(GeoJsonAllLanguages, ILanguage, IIndex)
     config.register_adapter(Wordlists, ILanguage, IIndex)
     config.register_adapter(Wordlist, ILanguage)
+    config.register_adapter(MapView, ILanguage, IIndex)
