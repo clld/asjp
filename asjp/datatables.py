@@ -1,18 +1,12 @@
-from sqlalchemy import Integer
-from sqlalchemy.sql.expression import cast
+import re
 
+from sqlalchemy import or_
 from clld.web.datatables import Values
 from clld.web.datatables.base import (
-    Col, LinkCol, IntegerIdCol, DataTable, LinkToMapCol, IntegerIdCol,
+    Col, LinkCol, LinkToMapCol, IntegerIdCol,
 )
-from clld.web.datatables.contribution import Contributions, CitationCol, ContributorsCol
-from clld.web.datatables import contributor
-from clld.web.datatables.parameter import Parameters
 from clld.web.datatables.language import Languages
-from clld.web.util.helpers import link
-from clld.web.util.htmllib import HTML
-from clld.db.meta import DBSession
-from clld.db.models.common import Language, Parameter, Value, Contribution, IdentifierType
+from clld.db.models.common import Language, Parameter, Value
 
 from asjp.models import Doculect, Word
 
@@ -23,17 +17,29 @@ class Words(Values):
     def col_defs(self):
         if self.parameter:
             res = [
-                #LinkToMapCol(self, 'm', get_object=lambda i: i.valueset.language),
-                LinkCol(self, 'language', model_col=Language.name, get_object=lambda i: i.valueset.language),
+                LinkCol(
+                    self, 'language',
+                    model_col=Language.name,
+                    get_object=lambda i: i.valueset.language),
             ]
         elif self.contribution:
             res = [
-                LinkCol(self, 'meaning', model_col=Parameter.name, get_object=lambda i: i.valueset.parameter),
+                LinkCol(
+                    self, 'meaning',
+                    model_col=Parameter.name,
+                    get_object=lambda i: i.valueset.parameter),
             ]
         elif self.language:
             res = [
-                IntegerIdCol(self, 'id', input_size='mini', model_col=Parameter.id, get_object=lambda i: i.valueset.parameter),
-                LinkCol(self, 'meaning', model_col=Parameter.name, get_object=lambda i: i.valueset.parameter),
+                IntegerIdCol(
+                    self, 'id',
+                    input_size='mini',
+                    model_col=Parameter.id,
+                    get_object=lambda i: i.valueset.parameter),
+                LinkCol(
+                    self, 'meaning',
+                    model_col=Parameter.name,
+                    get_object=lambda i: i.valueset.parameter),
             ]
         else:
             res = []
@@ -43,13 +49,24 @@ class Words(Values):
         ]
 
 
+class IsoCol(Col):
+    __kw__ = dict(sTitle='ISO 639-3', input_size='mini')
+
+    def search(self, qs):
+        whitespace = re.compile('\s+')
+        if whitespace.search(qs):
+            return or_(*[
+                Doculect.code_iso == q.strip() for q in whitespace.split(qs.lower())])
+        return Col.search(self, qs)
+
+
 class Wordlists(Languages):
     def col_defs(self):
         return [
             LinkToMapCol(self, 'm'),
             LinkCol(self, 'name'),
             Col(self, 'glottocode', model_col=Doculect.code_glottolog),
-            Col(self, 'iso', sTitle='ISO 639-3', input_size='mini', model_col=Doculect.code_iso),
+            IsoCol(self, 'iso', model_col=Doculect.code_iso),
             Col(self, 'wals', sTitle='WALS', input_size='mini', model_col=Doculect.code_wals),
             Col(self, 'latitude', input_size='mini'),
             Col(self, 'longitude', input_size='mini'),
