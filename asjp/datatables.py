@@ -15,19 +15,13 @@ class Words(Values):
     """Lists of words
     """
     def col_defs(self):
+        res = []
         if self.parameter:
             res = [
                 LinkCol(
                     self, 'language',
                     model_col=Language.name,
                     get_object=lambda i: i.valueset.language),
-            ]
-        elif self.contribution:
-            res = [
-                LinkCol(
-                    self, 'meaning',
-                    model_col=Parameter.name,
-                    get_object=lambda i: i.valueset.parameter),
             ]
         elif self.language:
             res = [
@@ -41,8 +35,6 @@ class Words(Values):
                     model_col=Parameter.name,
                     get_object=lambda i: i.valueset.parameter),
             ]
-        else:
-            res = []
         return res + [
             Col(self, 'name', sTitle='Word', model_col=Value.name),
             Col(self, 'loan', model_col=Word.loan),

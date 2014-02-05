@@ -11,23 +11,6 @@ from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
 from asjp.models import txt_header, Doculect
 
 
-class GeoJsonMeaning(GeoJsonParameter):
-    def feature_iterator(self, ctx, req):
-        languages = DBSession.query(ValueSet.language_pk)\
-            .filter(ValueSet.parameter_pk == ctx.pk).subquery()
-        return DBSession.query(Language)\
-            .filter(Language.pk.in_(languages))
-
-    def get_language(self, ctx, req, language):
-        return language
-
-    def feature_properties(self, ctx, req, language):
-        return {}
-
-    def get_coordinates(self, language):
-        return pacific_centered_coordinates(language)
-
-
 class _Language(object):
     def __init__(self, pk, name, longitude, latitude, id_):
         self.pk = pk
@@ -103,7 +86,6 @@ class MapView(Index):
 
 
 def includeme(config):
-    config.register_adapter(GeoJsonMeaning, IParameter)
     config.register_adapter(GeoJsonAllLanguages, ILanguage, IIndex)
     config.register_adapter(Wordlists, ILanguage, IIndex)
     config.register_adapter(Wordlist, ILanguage)

@@ -10,6 +10,7 @@ import csv
 import xlwt
 import transaction
 from sqlalchemy.orm import joinedload_all
+from unicsv import UnicodeCSVDictWriter
 from clld.scripts.util import (
     initializedb, Data, add_language_codes, glottocodes_by_isocode,
 )
@@ -161,6 +162,20 @@ def source2wordlist(args, data, sources):
     return matched
 
 
+def add_codes(lang):
+    for attr, prefix in dict(wals='wals_code_', iso='', glottolog='').items():
+        code = getattr(lang, 'code_' + attr)
+        if code:
+            id_ = prefix + code
+            identifier = common.Identifier.get(id_, default=None)
+            if not identifier:
+                identifier = common.Identifier(
+                    id=id_,
+                    name=code,
+                    type=getattr(common.IdentifierType, attr).value)
+            common.LanguageIdentifier(identifier=identifier, language=lang)
+
+
 def main(args):
     glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
 
@@ -172,6 +187,28 @@ def main(args):
         with open(sources, 'w') as fp:
             json.dump(res, fp)
         sources = res
+
+    #-----
+    with open(args.data_file('matched.json')) as fp:
+        source2doculect = json.load(fp)
+
+    with open(args.data_file('sources.csv'), 'w') as fp:
+        writer = UnicodeCSVDictWriter(
+            fp, 'href name author iso source notes wordlist'.split(), writeheader=True)
+
+        for source in sorted(sources, key=lambda i: (i['href'], i['name'])):
+            sid = '%s-%s' % (source['href'], source['name'])
+
+            if source.get('author') and ('KE' in source['author'] or 'MP' in source['author'] or 'NA' in source['author']):
+                print source['author'], source2doculect.get(sid, '??'), source
+
+            if 'asjp_name' in source:
+                del source['asjp_name']
+            source['wordlist'] = source2doculect.get(sid, '')
+            writer.writerow(source)
+
+    return
+    #-----
 
     with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
         wordlists = ['\n'.join(lines) for lines in parse(fp)]
@@ -233,7 +270,7 @@ def main(args):
     for l in wordlists:
         lang = models.Doculect.from_txt(l)
         lang.code_glottolog = glottocodes.get(lang.code_iso)
-        lang.add_codes()
+        add_codes(lang)
         data.add(models.Doculect, lang.id, _obj=lang)
 
         if lang.code_iso:

@@ -35,5 +35,4 @@ def main(global_config, **settings):
     )
     config.include('asjp.datatables')
     config.include('asjp.adapters')
-    config.include('asjp.maps')
     return config.make_wsgi_app()

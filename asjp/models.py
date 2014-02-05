@@ -312,18 +312,12 @@ class Doculect(Language, CustomModelMixin):
                 #    # drop non-core meanings
                 #    continue
                 vsid = '%s-%s' % (doculect.id, wid)
-                try:
-                    vs = ValueSet(
-                        id=vsid,
-                        description=comment,
-                        language=doculect,
-                        contribution=doculect.wordlist,
-                        parameter=Parameter.get(wid, session=session))
-                except:
-                    print doculect.id
-                    print line
-                    print wid
-                    raise
+                vs = ValueSet(
+                    id=vsid,
+                    description=comment,
+                    language=doculect,
+                    contribution=doculect.wordlist,
+                    parameter=Parameter.get(wid, session=session))
 
                 for i, word in enumerate(words):
                     id_ = '%s-%s' % (vsid, i + 1)
@@ -332,37 +326,12 @@ class Doculect(Language, CustomModelMixin):
 
         return doculect
 
-    def add_codes(self, session=None):
-        session = session or DBSession
-
-        for attr, prefix in dict(wals='wals_code_', iso='', glottolog='').items():
-            code = getattr(self, 'code_' + attr)
-            if code:
-                id_ = prefix + code
-                identifier = Identifier.get(id_, session=session, default=None)
-                if not identifier:
-                    identifier = Identifier(
-                        id=id_, name=code, type=getattr(IdentifierType, attr).value)
-                LanguageIdentifier(identifier=identifier, language=self)
-
-    #def compare_wals_classification(self, other):
-    #    if not other:
-    #        return 3
-    #    sf, sg = self.classification_wals.split('.')
-    #    of, og = other.classification_wals.split('.')
-    #    if sf != of:
-    #        return 3
-    #    if sg != og:
-    #        return 2
-    #    return 1
-
-    def to_txt(self, previous=None):
-        """
-        :param previous: Doculect instance preceding self in a sequence of wordlists.
+    def to_txt(self):
+        """render the wordlist in the ASJP plain text format.
         """
         nos = self.number_of_speakers
         if self.year_of_extinction:
-            nos = - self.year_of_extinction
+            nos = -self.year_of_extinction
         elif self.recently_extinct:
             nos = -1
         elif self.long_extinct:
@@ -374,7 +343,7 @@ class Doculect(Language, CustomModelMixin):
                 self.classification_ethnologue or '',
                 self.classification_glottolog or ''),
             '%s%s%s%s%s%s' % (
-                '1'.rjust(2),#str(self.compare_wals_classification(previous)).rjust(2),
+                '1'.rjust(2),
                 ('' if self.latitude is None else ('%.2f' % self.latitude)).rjust(8),
                 ('' if self.longitude is None else ('%.2f' % self.longitude)).rjust(8),
                 str(nos).rjust(12),
