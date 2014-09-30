@@ -4,8 +4,8 @@ from sqlalchemy.orm import joinedload_all
 from clld.db.meta import DBSession
 from clld.db.models.common import ValueSet, Language
 from clld.web.adapters.base import Representation, Index
-from clld.web.adapters.geojson import GeoJsonParameter, GeoJsonLanguages, pacific_centered_coordinates
-from clld.interfaces import IParameter, ILanguage, IIndex
+from clld.web.adapters.geojson import GeoJsonLanguages, pacific_centered_coordinates
+from clld.interfaces import ILanguage, IIndex
 from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
 
 from asjp.models import txt_header, Doculect

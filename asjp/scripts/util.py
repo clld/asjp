@@ -1,10 +1,11 @@
 # coding: utf8
 from __future__ import unicode_literals
 import re
-import codecs
 
 import requests
 from bs4 import BeautifulSoup as bs
+
+from clld.util import slug
 
 
 def get(args, path):
@@ -23,7 +24,11 @@ def get(args, path):
 def asjp_name(name):
     if '"' in name:
         name = name.split('"')[1]
-    return name.replace("'", "").replace(" ", "_").replace("/", "_").upper()
+    name = name.replace("'", "").replace(" ", "_").replace("/", "_").upper()
+    name = '_'.join(slug(p) for p in name.split('_'))
+    if name.startswith('proto') and not name.startswith('proto_'):
+        name = name.replace('proto', 'proto_', 1)
+    return name.upper()
 
 
 def text(n):
@@ -46,12 +51,14 @@ def parse_sources(args):
 </th><th> Notes
 </th></tr>
 <tr>
-<td> <a href="/asjp/index.php?title=A-Pucikwar_language&amp;action=edit&amp;redlink=1" class="new" title="A-Pucikwar language (page does not exist)"
+<td> <a href="/asjp/index.php?title=A-Pucikwar_language&amp;action=edit&amp;redlink=1"
+class="new" title="A-Pucikwar language (page does not exist)"
       >A-Pucikwar</a>
 </td>
 <td> apq </td>
 <td> AKW </td>
-<td> Man, Edward Horace. 1919-1923. Dictionary of the South Andaman language. Bombay: Education Society Press. </td>
+<td> Man, Edward Horace. 1919-1923. Dictionary of the South Andaman language. Bombay:
+Education Society Press. </td>
 <td> = "South Andaman"</td>
 </tr>
     """
@@ -76,4 +83,10 @@ def parse_sources(args):
                 # switch author and iso code in case they have obviously been confused.
                 source['author'], source['iso'] = source['iso'], source['author']
             if source and source.get('source'):
+                source['wordlist'] = ''
+                if '=' in source.get('notes', ''):
+                    l = source['notes'].split('=')[1].replace('"', '').strip()
+                    source['wordlist'] = asjp_name(l)
+                elif source.get('name'):
+                    source['wordlist'] = asjp_name(source['name'])
                 yield source

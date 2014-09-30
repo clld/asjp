@@ -10,25 +10,20 @@ from sqlalchemy import (
     Integer,
     Boolean,
     ForeignKey,
-    UniqueConstraint,
 )
 from sqlalchemy.orm import relationship, backref
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.sql.expression import cast
+from sqlalchemy.sql.expression import cast, true
 
 from clld import interfaces
-from clld.db.meta import Base, CustomModelMixin, DBSession
+from clld.db.meta import CustomModelMixin, DBSession
 from clld.db.models.common import (
     Value,
     Contribution,
     Language,
     ValueSet,
     Parameter,
-    Identifier,
-    LanguageIdentifier,
-    IdentifierType,
 )
+from clld.util import nfilter
 
 # see
 # Brown, Cecil H., Eric W. Holman, Søren Wichmann, and Viveka Vilupillai. 2008.
@@ -243,7 +238,7 @@ def txt_header(synonyms=2, words=28, year=1700, session=None):
         '(I4,20X,10A1)']
 
     for meaning in DBSession.query(Meaning)\
-            .filter(Meaning.core == True)\
+            .filter(Meaning.core == true())\
             .order_by(cast(Meaning.id, Integer)):
         lines.append('%s%s%s' % (rjust(int(meaning.id), 4), 20 * ' ', meaning.name))
 
@@ -254,9 +249,9 @@ def txt_header(synonyms=2, words=28, year=1700, session=None):
     return '\n'.join(lines)
 
 
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # specialized common mapper classes
-#-----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 @implementer(interfaces.IParameter)
 class Meaning(Parameter, CustomModelMixin):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
@@ -290,7 +285,7 @@ class Doculect(Language, CustomModelMixin):
     def from_txt(cls, txt, session=None, **kw):
         session = session or DBSession
 
-        lines = filter(None, txt.split('\n'))
+        lines = nfilter(txt.split('\n'))
         m = LANGUAGE_LINE_PATTERN.match(lines[0])
         assert m
         kw['id'] = m.group('name')
@@ -308,7 +303,7 @@ class Doculect(Language, CustomModelMixin):
         for line in lines[2:]:
             if '\t' in line:
                 wid, words, comment = parse_word(line)
-                #if int(wid) not in MEANINGS_ALL:
+                # if int(wid) not in MEANINGS_ALL:
                 #    # drop non-core meanings
                 #    continue
                 vsid = '%s-%s' % (doculect.id, wid)

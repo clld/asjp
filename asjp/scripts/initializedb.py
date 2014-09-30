@@ -1,5 +1,5 @@
 # coding: utf8
-from __future__ import unicode_literals
+from __future__ import unicode_literals, print_function
 import sys
 import codecs
 import json
@@ -8,12 +8,10 @@ from collections import defaultdict
 import csv
 
 import xlwt
-import transaction
+from sqlalchemy import create_engine
 from sqlalchemy.orm import joinedload_all
 from unicsv import UnicodeCSVDictWriter
-from clld.scripts.util import (
-    initializedb, Data, add_language_codes, glottocodes_by_isocode,
-)
+from clld.scripts.util import initializedb, Data, glottocodes_by_isocode
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.db.util import page_query
@@ -22,7 +20,7 @@ from clld.lib.excel import hyperlink
 
 import asjp
 from asjp import models
-from asjp.scripts.util import parse_sources, asjp_name
+from asjp.scripts.util import parse_sources
 
 
 def parse(fp):
@@ -55,7 +53,7 @@ def source2wordlist(args, data, sources):
     for row in DBSession.query(models.Doculect.id, models.Doculect.code_iso):
         s = slug(row[0])
         if s in asjp_names:
-            print asjp_names[s], row[0], s
+            print(asjp_names[s], row[0], s)
         asjp_names[s] = row[0]
         if row[1]:
             by_iso[row[1]].append(row[0])
@@ -73,7 +71,7 @@ def source2wordlist(args, data, sources):
         if (source['href'].split('/')[-1], source['name']) in revised:
             julia += 1
             matched[sid] = revised[(source['href'].split('/')[-1], source['name'])]
-            print sid, matched[sid]
+            print(sid, matched[sid])
             continue
 
         if slug(source['name']) in asjp_names:
@@ -124,11 +122,11 @@ def source2wordlist(args, data, sources):
     #
     # TODO: add candidates (determined by iso code) for un-matched entries!
     #
-    print names, 'from name'
-    print notes, 'from notes'
-    print iso, 'from iso'
-    print len(missing), 'missing'
-    print len(sources), '==', julia + names + notes + iso + len(missing)
+    print(names, 'from name')
+    print(notes, 'from notes')
+    print(iso, 'from iso')
+    print(len(missing), 'missing')
+    print(len(sources), '==', julia + names + notes + iso + len(missing))
 
     wb = xlwt.Workbook()
     ws = wb.add_sheet('Unmatched sources')
@@ -143,7 +141,8 @@ def source2wordlist(args, data, sources):
             if col in ['name', 'notes', 'iso', 'source']:
                 value = source.get(col, '')
             elif col == 'wiki':
-                value = hyperlink('https://lingweb.eva.mpg.de' + source['href'], source['href'].split('/')[-1])
+                value = hyperlink('https://lingweb.eva.mpg.de' + source['href'],
+                                  source['href'].split('/')[-1])
             elif col == 'candidates' and candidates:
                 value = ', '.join(candidates)
             else:
@@ -157,7 +156,7 @@ def source2wordlist(args, data, sources):
         json.dump(matched, fp)
 
     doculects_without_source = set(asjp_names.values()) - set(matched.values())
-    print len(doculects_without_source), 'without source'
+    print(len(doculects_without_source), 'without source')
 
     return matched
 
@@ -179,6 +178,9 @@ def add_codes(lang):
 def main(args):
     glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
 
+    db = create_engine('postgresql://robert@/asjp')
+    wordlists = {row[0]: 1 for row in db.execute('select id from language;')}
+
     sources = args.data_file('sources.json')
     if sources.exists():
         sources = json.load(open(sources))
@@ -192,6 +194,7 @@ def main(args):
     with open(args.data_file('matched.json')) as fp:
         source2doculect = json.load(fp)
 
+    nowordlist = 0
     with open(args.data_file('sources.csv'), 'w') as fp:
         writer = UnicodeCSVDictWriter(
             fp, 'href name author iso source notes wordlist'.split(), writeheader=True)
@@ -199,16 +202,25 @@ def main(args):
         for source in sorted(sources, key=lambda i: (i['href'], i['name'])):
             sid = '%s-%s' % (source['href'], source['name'])
 
-            if source.get('author') and ('KE' in source['author'] or 'MP' in source['author'] or 'NA' in source['author']):
-                print source['author'], source2doculect.get(sid, '??'), source
+            if source.get('author') and \
+                    ('KE' in source['author']
+                     or 'MP' in source['author']
+                     or 'NA' in source['author']):
+                print(source['author'], source2doculect.get(sid, '??'), source)
 
             if 'asjp_name' in source:
                 del source['asjp_name']
-            source['wordlist'] = source2doculect.get(sid, '')
+            if not source['wordlist']:
+                source['wordlist'] = source2doculect.get(sid, '')
+            if source['wordlist'] not in wordlists:
+                print('----->', source['wordlist'])
+                nowordlist += 1
+                source['wordlist'] = ''
             writer.writerow(source)
 
-    return
-    #-----
+    # print nowordlist, 'sources missing a wordlist'
+    # return
+    # -----
 
     with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
         wordlists = ['\n'.join(lines) for lines in parse(fp)]
@@ -291,7 +303,7 @@ def main(args):
             contributor = contributor.strip()
             if contributor:
                 if not contributor in data['Contributor']:
-                    print '---missing---', contributor, '--source--', source
+                    print('---missing---', contributor, '--source--', source)
                 else:
                     contributors.append(data['Contributor'][contributor])
         if source['source'] in data['Source']:
@@ -302,7 +314,7 @@ def main(args):
         sid = '%s-%s' % (source['href'], source['name'])
         if sid in source2doculect:
             if source2doculect[sid] not in data['Doculect']:
-                print "unknown doculect ID in source2doculect", source2doculect[sid]
+                print("unknown doculect ID in source2doculect", source2doculect[sid])
             else:
                 lang = data['Doculect'][source2doculect[sid]]
 
@@ -324,7 +336,7 @@ def main(args):
                             contribution=contribution,
                             contributor=contributor))
                         cc[(contributor.id, contribution.id)] = 1
-    print len(wordlists)
+    print(len(wordlists))
 
     #print models.txt_header()
     #previous = None

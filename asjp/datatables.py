@@ -59,23 +59,25 @@ class Wordlists(Languages):
             LinkCol(self, 'name'),
             Col(self, 'glottocode', model_col=Doculect.code_glottolog),
             IsoCol(self, 'iso', model_col=Doculect.code_iso),
-            Col(self, 'wals', sTitle='WALS', input_size='mini', model_col=Doculect.code_wals),
+            Col(self, 'wals',
+                sTitle='WALS', input_size='mini', model_col=Doculect.code_wals),
             Col(self, 'latitude', input_size='mini'),
             Col(self, 'longitude', input_size='mini'),
             Col(self, 'number_of_speakers', model_col=Doculect.number_of_speakers),
             Col(self, 'long_extinct', input_size='mini', model_col=Doculect.long_extinct),
-            Col(self, 'recently_extinct', input_size='mini', model_col=Doculect.recently_extinct),
-            Col(self, 'year_of_extinction', input_size='mini', model_col=Doculect.year_of_extinction),
-            Col(self, 'classification_wals', model_col=Doculect.classification_wals),
-            Col(self, 'classification_ethnologue', model_col=Doculect.classification_ethnologue),
-            Col(self, 'classification_glottolog', model_col=Doculect.classification_glottolog),
+            Col(self, 'recently_extinct',
+                input_size='mini', model_col=Doculect.recently_extinct),
+            Col(self, 'year_of_extinction',
+                input_size='mini', model_col=Doculect.year_of_extinction),
+            Col(self, 'classification_wals',
+                model_col=Doculect.classification_wals),
+            Col(self, 'classification_ethnologue',
+                model_col=Doculect.classification_ethnologue),
+            Col(self, 'classification_glottolog',
+                model_col=Doculect.classification_glottolog),
         ]
 
 
 def includeme(config):
     config.register_datatable('values', Words)
     config.register_datatable('languages', Wordlists)
-    #config.register_datatable('contributors', Compilers)
-    #config.register_datatable('contributions', Vocabularies)
-    #config.register_datatable('parameters', Entries)
-    #config.register_datatable('chapters', Chapters)
