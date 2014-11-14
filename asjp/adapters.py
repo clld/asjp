@@ -63,6 +63,7 @@ class Wordlists(Index):
         for wordlist in q:
             res.append(wordlist.to_txt())
 
+        res.append('')
         return '\n'.join(res)
 
 

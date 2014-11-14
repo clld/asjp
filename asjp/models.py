@@ -246,6 +246,7 @@ def txt_header(synonyms=2, words=28, year=1700, session=None):
     for char in ASJPCODES:
         lines.append(char)
     lines.append('')
+    lines.append('')
     return '\n'.join(lines)
 
 
