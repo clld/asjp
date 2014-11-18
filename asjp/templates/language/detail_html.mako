@@ -5,6 +5,9 @@
 
 <h2>${_('Language')} ${ctx.name}</h2>
 <p>
+    ${h.alt_representations(request, ctx)}
+</p>
+<p>
     Compiled by ${h.linked_contributors(request, ctx.wordlist)}
 </p>
 ${request.get_datatable('values', h.models.Value, language=ctx).render()}

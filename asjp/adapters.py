@@ -1,12 +1,19 @@
 from __future__ import unicode_literals
+from tempfile import mkdtemp
+from shutil import rmtree
+import os
 
 from sqlalchemy.orm import joinedload_all
+
+from clld.util import binary_type
 from clld.db.meta import DBSession
-from clld.db.models.common import ValueSet, Language
+from clld.db.models.common import ValueSet, Language, Parameter, Dataset
 from clld.web.adapters.base import Representation, Index
 from clld.web.adapters.geojson import GeoJsonLanguages, pacific_centered_coordinates
+from clld.web.adapters.download import Download
 from clld.interfaces import ILanguage, IIndex
 from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
+from clld.lib.dsv import UnicodeWriter
 
 from asjp.models import txt_header, Doculect
 
@@ -35,6 +42,9 @@ class GeoJsonAllLanguages(GeoJsonLanguages):
 
 
 class Wordlist(Representation):
+    """The ASJP wordlist format suitable as input for the ASJP software.
+    """
+    name = "ASJP text format"
     mimetype = str('text/plain')
     extension = str('txt')
 
@@ -43,6 +53,7 @@ class Wordlist(Representation):
 
 
 class Wordlists(Index):
+    name = "ASJP text format (only up to 1500 wordlists can be exported)"
     extension = str('txt')
     mimetype = str('text/plain')
 
@@ -86,8 +97,46 @@ class MapView(Index):
             'languages': languages}
 
 
+class Tab(Download):
+    ext = 'tab'
+
+    fields = [
+        ('names', lambda l: l.id),
+        ('wls_fam', lambda l: l.classification_wals.split('.')[0]
+            if '.' in l.classification_wals else ''),
+        ('wls_gen', lambda l: l.classification_wals.split('.')[1]
+            if '.' in l.classification_wals else ''),
+        ('e', lambda l: l.classification_ethnologue),
+        ('hh', lambda l: l.classification_glottolog),
+        ('lat', lambda l: l.latitude),
+        ('lon', lambda l: l.longitude),
+        ('pop', lambda l: l.number_of_speakers),
+        ('wcode', lambda l: ''),
+        ('iso', lambda l: l.code_iso),
+    ]
+
+    def create(self, req, filename=None, verbose=True):
+        meanings = [(p.name, p.id)
+                    for p in DBSession.query(Parameter).order_by(Parameter.pk)]
+        tmp = mkdtemp()
+        path = os.path.join(tmp, 'asjp.tab')
+        with UnicodeWriter(f=path, delimiter=binary_type("\t")) as writer:
+            writer.writerow([f[0] for f in self.fields] + [m[0] for m in meanings])
+            for lang in DBSession.query(Doculect).order_by(Doculect.pk).options(
+                    joinedload_all(Language.valuesets, ValueSet.values),
+                    joinedload_all(Language.valuesets, ValueSet.parameter)
+            ).limit(10000):
+                row = [f[1](lang) for f in self.fields]
+                vss = {vs.parameter.id: vs for vs in lang.valuesets}
+                row.extend([Doculect.format_words(vss.get(m[1])) for m in meanings])
+                writer.writerow(row)
+        Download.create(self, req, filename=path)
+        rmtree(tmp)
+
+
 def includeme(config):
     config.register_adapter(GeoJsonAllLanguages, ILanguage, IIndex)
     config.register_adapter(Wordlists, ILanguage, IIndex)
     config.register_adapter(Wordlist, ILanguage)
     config.register_adapter(MapView, ILanguage, IIndex)
+    config.register_download(Tab(Dataset, 'asjp'))

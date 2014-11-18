@@ -6,6 +6,7 @@ from clld.web.datatables.base import (
     Col, LinkCol, LinkToMapCol, IntegerIdCol,
 )
 from clld.web.datatables.language import Languages
+from clld.web.util.helpers import external_link
 from clld.db.models.common import Language, Parameter, Value
 
 from asjp.models import Doculect, Word
@@ -52,14 +53,28 @@ class IsoCol(Col):
         return Col.search(self, qs)
 
 
+class ExtLinkCol(Col):
+    def __init__(self, dt, name, link_type, **kw):
+        self.link_type = link_type
+        Col.__init__(self, dt, name, **kw)
+
+    def format(self, item):
+        label = Col.format(self, item)
+        href = item.href(self.link_type)
+        if href:
+            return external_link(href, label=label)
+        return label
+
+
 class Wordlists(Languages):
     def col_defs(self):
         return [
             LinkToMapCol(self, 'm'),
             LinkCol(self, 'name'),
-            Col(self, 'glottocode', model_col=Doculect.code_glottolog),
+            ExtLinkCol(self, 'glottocode', 'glottolog', model_col=Doculect.code_glottolog),
             IsoCol(self, 'iso', model_col=Doculect.code_iso),
-            Col(self, 'wals',
+            ExtLinkCol(
+                self, 'wals', 'wals',
                 sTitle='WALS', input_size='mini', model_col=Doculect.code_wals),
             Col(self, 'latitude', input_size='mini'),
             Col(self, 'longitude', input_size='mini'),

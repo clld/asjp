@@ -17,6 +17,7 @@ from clld.db.models import common
 from clld.db.util import page_query
 from clld.util import slug
 from clld.lib.excel import hyperlink
+from clld.lib.dsv import reader
 
 import asjp
 from asjp import models
@@ -165,6 +166,8 @@ def add_codes(lang):
     for attr, prefix in dict(wals='wals_code_', iso='', glottolog='').items():
         code = getattr(lang, 'code_' + attr)
         if code:
+            if attr == 'iso' and not re.match('[a-z]{3}$', code):
+                continue
             id_ = prefix + code
             identifier = common.Identifier.get(id_, default=None)
             if not identifier:
@@ -176,56 +179,81 @@ def add_codes(lang):
 
 
 def main(args):
+    #sources = args.data_file('sources.json')
+    #res = list(parse_sources(args))
+    #with open(sources, 'w') as fp:
+    #    json.dump(res, fp)
+    #sources = res
+    #return
+
     glottocodes = glottocodes_by_isocode('postgresql://robert@/glottolog3')
 
-    db = create_engine('postgresql://robert@/asjp')
-    wordlists = {row[0]: 1 for row in db.execute('select id from language;')}
+    #db = create_engine('postgresql://robert@/asjp')
+    #wordlists = {row[0]: 1 for row in db.execute('select id from language;')}
 
-    sources = args.data_file('sources.json')
-    if sources.exists():
-        sources = json.load(open(sources))
-    else:
-        res = list(parse_sources(args))
-        with open(sources, 'w') as fp:
-            json.dump(res, fp)
-        sources = res
+    #sources = args.data_file('sources.json')
+    #if sources.exists():
+    #    sources = json.load(open(sources))
+    #else:
+    #    res = list(parse_sources(args))
+    #    with open(sources, 'w') as fp:
+    #        json.dump(res, fp)
+    #    sources = res
 
     #-----
-    with open(args.data_file('matched.json')) as fp:
-        source2doculect = json.load(fp)
+    #with open(args.data_file('matched.json')) as fp:
+    #    source2doculect = json.load(fp)
 
-    nowordlist = 0
-    with open(args.data_file('sources.csv'), 'w') as fp:
-        writer = UnicodeCSVDictWriter(
-            fp, 'href name author iso source notes wordlist'.split(), writeheader=True)
+    #nowordlist = 0
+    #with open(args.data_file('sources.csv'), 'w') as fp:
+    #    writer = UnicodeCSVDictWriter(
+    #        fp, 'href name author iso source notes wordlist'.split(), writeheader=True)
 
-        for source in sorted(sources, key=lambda i: (i['href'], i['name'])):
-            sid = '%s-%s' % (source['href'], source['name'])
+    #    for source in sorted(sources, key=lambda i: (i['href'], i['name'])):
+    #        sid = '%s-%s' % (source['href'], source['name'])
 
-            if source.get('author') and \
-                    ('KE' in source['author']
-                     or 'MP' in source['author']
-                     or 'NA' in source['author']):
-                print(source['author'], source2doculect.get(sid, '??'), source)
+    #        if source.get('author') and \
+    #                ('KE' in source['author']
+    #                 or 'MP' in source['author']
+    #                 or 'NA' in source['author']):
+    #            print(source['author'], source2doculect.get(sid, '??'), source)
 
-            if 'asjp_name' in source:
-                del source['asjp_name']
-            if not source['wordlist']:
-                source['wordlist'] = source2doculect.get(sid, '')
-            if source['wordlist'] not in wordlists:
-                print('----->', source['wordlist'])
-                nowordlist += 1
-                source['wordlist'] = ''
-            writer.writerow(source)
+    #        if 'asjp_name' in source:
+    #            del source['asjp_name']
+    #        if not source['wordlist']:
+    #            source['wordlist'] = source2doculect.get(sid, '')
+    #        if source['wordlist'] not in wordlists:
+    #            print('----->', source['wordlist'])
+    #            nowordlist += 1
+    #            source['wordlist'] = ''
+    #        writer.writerow(source)
 
     # print nowordlist, 'sources missing a wordlist'
     # return
     # -----
 
+    data = Data()
+
+    wals = create_engine('postgresql://robert@/wals3')
+    wals_families = {}
+    for row in wals.execute('select name, id from family'):
+        wals_families[row[0]] = row[1]
+        wals_families[row[1]] = row[1]
+
+    for item in reader(args.data_file('WALSFamilyAbbreviations.tab'), namedtuples=True, encoding='latin1'):
+        name = item.FAMILY
+        if name not in wals_families:
+            name = slug(name)
+            if name not in wals_families:
+                print('missing wals family:', item.FAMILY)
+                name = None
+        if name:
+            wals_families[item.ABBREVIATION] = wals_families[name]
+
+    wals_genera = {row[0]: row[0] for row in wals.execute('select id from genus')}
+
     with codecs.open(args.data_file('listss16.txt'), encoding='latin1') as fp:
         wordlists = ['\n'.join(lines) for lines in parse(fp)]
-
-    data = Data()
 
     dataset = common.Dataset(
         id=asjp.__name__,
@@ -233,10 +261,10 @@ def main(args):
         contact="wichmann@eva.mpg.de",
         description="The Automated Similarity Judgement Program",
         domain='asjp.clld.org',
-        license='http://creativecommons.org/licenses/by/3.0/',
+        license='http://creativecommons.org/licenses/by/4.0/',
         jsondata={
             'license_icon': 'cc-by.png',
-            'license_name': 'Creative Commons Attribution 3.0 Unported License'})
+            'license_name': 'Creative Commons Attribution 4.0 International License'})
     DBSession.add(dataset)
 
     for i, spec in enumerate([
@@ -264,10 +292,10 @@ def main(args):
         ('HG', "Helen Geyer"),
         ('PE', "Pattie Epps"),
         ('AG', "Anthony Grant"),
-        ('PS', "Paul Sidwell"),
-        ('KTR', "K. Taraka Rama"),
+        ('PS', "Paul Sidwell"),  # not in citation
+        ('KTR', "K. Taraka Rama"),  # not in citation
         ('PV', "Pilar Valenzuela"),
-        ('MD', "Mark Donohue"),
+        ('MD', "Mark Donohue"),  # not in citation
     ]):
         contributor = data.add(common.Contributor, spec[0], id=spec[0], name=spec[1])
         DBSession.add(common.Editor(dataset=dataset, ord=i + 1, contributor=contributor))
@@ -281,6 +309,10 @@ def main(args):
     langs_by_iso_code = {}
     for l in wordlists:
         lang = models.Doculect.from_txt(l)
+        if lang.classification_wals:
+            family, genus = lang.classification_wals.split('.')
+            lang.wals_family = wals_families.get(family)
+            lang.wals_genus = wals_genera.get(slug(genus))
         lang.code_glottolog = glottocodes.get(lang.code_iso)
         add_codes(lang)
         data.add(models.Doculect, lang.id, _obj=lang)
@@ -291,13 +323,19 @@ def main(args):
             else:
                 langs_by_iso_code[lang.code_iso] = [lang]
 
-    #source2doculect = source2wordlist(args, data, sources)
-    with open(args.data_file('matched.json')) as fp:
-        source2doculect = json.load(fp)
+    sources = reader(args.data_file('sources_LS.csv'), delimiter=",", dicts=True)
 
     ls = {}
     cc = {}
+    year_match = 0
+    year_pattern = re.compile('\.\s*(?P<year>[0-9]{4})\.')
     for i, source in enumerate(sources):
+        if not source['comment LS'].startswith('ok'):
+            continue
+
+        if source['wordlist'] not in data['Doculect']:
+            continue
+
         contributors = []
         for contributor in re.split('\s*/\s*|,\s*|\s+and\s+', source.get('author', '')):
             contributor = contributor.strip()
@@ -306,43 +344,34 @@ def main(args):
                     print('---missing---', contributor, '--source--', source)
                 else:
                     contributors.append(data['Contributor'][contributor])
+
         if source['source'] in data['Source']:
             s = data['Source'][source['source']]
         else:
-            s = data.add(common.Source, source['source'], id=str(i + 1), name=source['source'])
+            author, year, title, description = None, None, None, None
+            name = source['source']
+            if year_pattern.search(source['source']):
+                year_match += 1
+                author, year, title = year_pattern.split(source['source'], maxsplit=1)
+                name = '%s %s' % (author, year)
 
-        sid = '%s-%s' % (source['href'], source['name'])
-        if sid in source2doculect:
-            if source2doculect[sid] not in data['Doculect']:
-                print("unknown doculect ID in source2doculect", source2doculect[sid])
-            else:
-                lang = data['Doculect'][source2doculect[sid]]
+            s = data.add(
+                common.Source, source['source'], id=str(i + 1),
+                name=name, description=description, author=author, year=year, title=title)
 
-        #langs = []
-        #if source.get('asjp_name') in data['Doculect']:
-        #    langs = [data['Doculect'][source['asjp_name']]]
-        #elif source.get('iso') in langs_by_iso_code:
-        #    langs = langs_by_iso_code[source['iso']]
-        #elif source.get('name') and asjp_name(source.get('name', '')) in data['Doculect']:
-        #    langs = [data['Doculect'][asjp_name(source['name'])]]
-        #for lang in set(langs):
-                if (lang.id, s.id) not in ls:
-                    lang.sources.append(s)
-                    ls[(lang.id, s.id)] = 1
-                contribution = lang.wordlist
-                for contributor in set(contributors):
-                    if (contributor.id, contribution.id) not in cc:
-                        DBSession.add(common.ContributionContributor(
-                            contribution=contribution,
-                            contributor=contributor))
-                        cc[(contributor.id, contribution.id)] = 1
+        lang = data['Doculect'][source['wordlist']]
+        if (lang.id, s.id) not in ls:
+            lang.sources.append(s)
+            ls[(lang.id, s.id)] = 1
+        contribution = lang.wordlist
+        for contributor in set(contributors):
+            if (contributor.id, contribution.id) not in cc:
+                DBSession.add(common.ContributionContributor(
+                    contribution=contribution,
+                    contributor=contributor))
+                cc[(contributor.id, contribution.id)] = 1
     print(len(wordlists))
-
-    #print models.txt_header()
-    #previous = None
-    #for doculect in DBSession.query(models.Doculect).order_by(models.Doculect.pk).limit(3):
-    #    print doculect.to_txt(previous=previous)
-    #    previous = doculect
+    print(year_match, 'sources may be split')
 
 
 def prime_cache(args):

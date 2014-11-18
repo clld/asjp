@@ -282,6 +282,24 @@ class Doculect(Language, CustomModelMixin):
     year_of_extinction = Column(Integer)
     txt = Column(Unicode)
 
+    wals_genus = Column(String)
+    wals_family = Column(String)
+    ethnologue_family = Column(Unicode)
+    glottolog_family = Column(Unicode)
+
+    def href(self, type):
+        if type == 'wals_genus' and self.wals_genus:
+            return 'http://wals.info/languoid/genus/' + self.wals_genus
+
+        if type == 'wals_family' and self.wals_family:
+            return 'http://wals.info/languoid/family/' + self.wals_family
+
+        if type == 'wals' and self.code_wals:
+            return 'http://wals.info/languoid/lect/wals_code_' + self.code_wals
+
+        if type == 'glottolog' and self.code_glottolog:
+            return 'http://glottolog.org/resource/languoid/id/' + self.code_glottolog
+
     @classmethod
     def from_txt(cls, txt, session=None, **kw):
         session = session or DBSession
@@ -297,6 +315,11 @@ class Doculect(Language, CustomModelMixin):
 
         kw.update(parse_metadata(lines[1]))
         doculect = cls(**kw)
+        if doculect.classification_ethnologue:
+            doculect.ethnologue_family = doculect.classification_ethnologue.split(',')[0]
+
+        if doculect.classification_glottolog:
+            doculect.glottolog_family = doculect.classification_glottolog.split(',')[0]
 
         doculect.wordlist = Contribution(
             id=kw['id'], language=doculect, name=doculect.id)
@@ -322,6 +345,17 @@ class Doculect(Language, CustomModelMixin):
 
         return doculect
 
+    @staticmethod
+    def format_word(w):
+        return '%' + w.name if w.loan else w.name
+
+    @staticmethod
+    def format_words(synset):
+        if not synset:
+            return ''
+        return ', '.join(map(
+            Doculect.format_word, sorted(synset.values, key=lambda item: item.id))),
+
     def to_txt(self):
         """render the wordlist in the ASJP plain text format.
         """
@@ -345,12 +379,10 @@ class Doculect(Language, CustomModelMixin):
                 str(nos).rjust(12),
                 (self.code_wals or '').rjust(6),
                 (self.code_iso or '').rjust(6))]
-        format_word = lambda w: '%' + w.name if w.loan else w.name
         for synset in sorted(self.valuesets, key=lambda item: int(item.parameter.id)):
             lines.append('%s %s\t%s //%s' % (
                 synset.parameter.id,
                 MEANINGS_ALL[int(synset.parameter.id)],
-                ', '.join(map(
-                    format_word, sorted(synset.values, key=lambda item: item.id))),
+                Doculect.format_words(synset),
                 (' ' + synset.description) if synset.description else ''))
         return '\n'.join(lines)
