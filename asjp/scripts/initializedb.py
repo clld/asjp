@@ -18,6 +18,7 @@ from clld.db.util import page_query
 from clld.util import slug
 from clld.lib.excel import hyperlink
 from clld.lib.dsv import reader
+from clld.lib.bibtex import EntryType
 
 import asjp
 from asjp import models
@@ -298,7 +299,11 @@ def main(args):
         ('MD', "Mark Donohue"),  # not in citation
     ]):
         contributor = data.add(common.Contributor, spec[0], id=spec[0], name=spec[1])
-        DBSession.add(common.Editor(dataset=dataset, ord=i + 1, contributor=contributor))
+        if spec[0] in ['SW', 'CB', 'EH']:
+            DBSession.add(common.Editor(
+                dataset=dataset,
+                ord=i + 1,
+                contributor=contributor))
 
     for id_ in sorted(models.MEANINGS_ALL.keys()):
         data.add(
@@ -328,6 +333,7 @@ def main(args):
     ls = {}
     cc = {}
     year_match = 0
+    # TODO: recognize "No date" and "n.y" and "year-year" and "year, year, year", ...
     year_pattern = re.compile('\.\s*(?P<year>[0-9]{4})\.')
     for i, source in enumerate(sources):
         if not source['comment LS'].startswith('ok'):
@@ -348,16 +354,23 @@ def main(args):
         if source['source'] in data['Source']:
             s = data['Source'][source['source']]
         else:
-            author, year, title, description = None, None, None, None
+            author, year, title, description, note = None, None, None, None, None
             name = source['source']
             if year_pattern.search(source['source']):
                 year_match += 1
                 author, year, title = year_pattern.split(source['source'], maxsplit=1)
+                description = title
+                if '.' in title:
+                    title, note = title.split('.', 1)
+                if len(author.split()[-1]) == 1:
+                    # author names end with initial
+                    author += '.'
                 name = '%s %s' % (author, year)
 
             s = data.add(
                 common.Source, source['source'], id=str(i + 1),
-                name=name, description=description, author=author, year=year, title=title)
+                name=name, description=description, author=author, year=year, title=title,
+                note=note, bibtex_type=EntryType.misc)
 
         lang = data['Doculect'][source['wordlist']]
         if (lang.id, s.id) not in ls:

@@ -27,6 +27,9 @@ def main(global_config, **settings):
         (link_attrs, interfaces.ILinkAttrs),
     ]
     config = get_configurator('asjp', *utilities, **dict(settings=settings))
+    home_comp = config.registry.settings['home_comp']
+    home_comp.append('software')
+    config.add_settings(home_comp=home_comp)
     config.include('clldmpg')
     config.register_menu(
         ('dataset', partial(menu_item, 'dataset', label='Home')),
@@ -34,4 +37,5 @@ def main(global_config, **settings):
         ('parameters', partial(menu_item, 'parameters')),
         ('sources', partial(menu_item, 'sources')),
     )
+    config.add_route('software', '/software')
     return config.make_wsgi_app()
