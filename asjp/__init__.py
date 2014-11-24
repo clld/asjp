@@ -29,6 +29,7 @@ def main(global_config, **settings):
     config = get_configurator('asjp', *utilities, **dict(settings=settings))
     home_comp = config.registry.settings['home_comp']
     home_comp.append('software')
+    home_comp.append('contribute')
     config.add_settings(home_comp=home_comp)
     config.include('clldmpg')
     config.register_menu(
@@ -38,4 +39,5 @@ def main(global_config, **settings):
         ('sources', partial(menu_item, 'sources')),
     )
     config.add_route('software', '/software')
+    config.add_route('contribute', '/contribute')
     return config.make_wsgi_app()
