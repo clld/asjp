@@ -179,6 +179,40 @@ def add_codes(lang):
             common.LanguageIdentifier(identifier=identifier, language=lang)
 
 
+def get_source(source, id_):
+    source = source.strip()
+    url_pattern = re.compile('(?P<url>http(s)?://[^\s]+)\s+\((?P<note>[^\)]+)\)\s*$')
+    year_pattern = re.compile('\.\s*(?P<year>[0-9]{4}(?:(?:,|-)[0-9]{4})*)\.')
+
+    author, year, title, description, note, url = None, None, None, None, None, None
+    match = url_pattern.match(source)
+    if match:
+        url = name = match.group('url')
+        note = description = match.group('note')
+    else:
+        name = source
+        if year_pattern.search(source):
+            author, year, title = year_pattern.split(source, maxsplit=1)
+            description = title
+            if '.' in title:
+                title, note = title.split('.', 1)
+            if len(author.split()[-1]) == 1:
+                # author names end with initial
+                author += '.'
+            name = '%s %s' % (author, year)
+
+    return common.Source(
+        id=id_,
+        name=name,
+        description=description,
+        author=author,
+        year=year,
+        title=title,
+        note=note,
+        url=url,
+        bibtex_type=EntryType.misc)
+
+
 def main(args):
     #sources = args.data_file('sources.json')
     #res = list(parse_sources(args))
@@ -260,8 +294,11 @@ def main(args):
         id=asjp.__name__,
         name="ASJP",
         contact="wichmann@eva.mpg.de",
-        description="The Automated Similarity Judgement Program",
+        description="The Automated Similarity Judgment Program",
         domain='asjp.clld.org',
+        publisher_name="Max Planck Institute for Evolutionary Anthropology",
+        publisher_place="Leipzig",
+        publisher_url="http://www.eva.mpg.de",
         license='http://creativecommons.org/licenses/by/4.0/',
         jsondata={
             'license_icon': 'cc-by.png',
@@ -354,23 +391,10 @@ def main(args):
         if source['source'] in data['Source']:
             s = data['Source'][source['source']]
         else:
-            author, year, title, description, note = None, None, None, None, None
-            name = source['source']
-            if year_pattern.search(source['source']):
-                year_match += 1
-                author, year, title = year_pattern.split(source['source'], maxsplit=1)
-                description = title
-                if '.' in title:
-                    title, note = title.split('.', 1)
-                if len(author.split()[-1]) == 1:
-                    # author names end with initial
-                    author += '.'
-                name = '%s %s' % (author, year)
-
             s = data.add(
-                common.Source, source['source'], id=str(i + 1),
-                name=name, description=description, author=author, year=year, title=title,
-                note=note, bibtex_type=EntryType.misc)
+                common.Source,
+                source['source'],
+                _obj=get_source(source['source'], str(i + 1)))
 
         lang = data['Doculect'][source['wordlist']]
         if (lang.id, s.id) not in ls:
