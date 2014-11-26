@@ -265,6 +265,12 @@ class Word(Value, CustomModelMixin):
     loan = Column(Boolean, default=False)
 
 
+@implementer(interfaces.IValueSet)
+class Synset(ValueSet, CustomModelMixin):
+    pk = Column(Integer, ForeignKey('valueset.pk'), primary_key=True)
+    words = Column(Unicode)
+
+
 @implementer(interfaces.ILanguage)
 class Doculect(Language, CustomModelMixin):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
@@ -331,7 +337,7 @@ class Doculect(Language, CustomModelMixin):
                 #    # drop non-core meanings
                 #    continue
                 vsid = '%s-%s' % (doculect.id, wid)
-                vs = ValueSet(
+                vs = Synset(
                     id=vsid,
                     description=comment,
                     language=doculect,
@@ -354,7 +360,7 @@ class Doculect(Language, CustomModelMixin):
         if not synset:
             return ''
         return ', '.join(map(
-            Doculect.format_word, sorted(synset.values, key=lambda item: item.id))),
+            Doculect.format_word, sorted(synset.values, key=lambda item: item.id)))
 
     def to_txt(self):
         """render the wordlist in the ASJP plain text format.

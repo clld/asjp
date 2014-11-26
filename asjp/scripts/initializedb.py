@@ -416,16 +416,19 @@ def prime_cache(args):
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
     """
-    return
     q = DBSession.query(models.Doculect)\
         .order_by(models.Doculect.pk)\
         .options(
             joinedload_all(common.Language.valuesets, common.ValueSet.values),
-            joinedload_all(common.Language.valuesets, common.ValueSet.parameter))
-    previous = None
-    for doculect in page_query(q, n=100, verbose=True, commit=True):
-        doculect.txt = doculect.to_txt(previous=previous)
-        previous = doculect
+            joinedload_all(common.Language.valuesets, common.ValueSet.parameter)
+        )
+    for doculect in q:
+        doculect.txt = doculect.to_txt()
+
+    #previous = None
+    #for doculect in page_query(q, n=100, verbose=True, commit=True):
+    #    doculect.txt = doculect.to_txt(previous=previous)
+    #    previous = doculect
 
     #
     # TODO: include macroarea info from glottolog!

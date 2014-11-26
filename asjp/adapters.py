@@ -49,7 +49,7 @@ class Wordlist(Representation):
     extension = str('txt')
 
     def render(self, ctx, req):
-        return ctx.to_txt()
+        return ctx.txt
 
 
 class Wordlists(Index):
@@ -59,22 +59,8 @@ class Wordlists(Index):
 
     def render(self, ctx, req):
         res = [txt_header()]
-
-        #
-        # TODO: render warning, if more than 1500 items would have matched.
-        #
-        ids = [d.pk for d in ctx.get_query(limit=1500)]
-
-        q = DBSession.query(Doculect)\
-            .filter(Doculect.pk.in_(ids))\
-            .options(
-                joinedload_all(Language.valuesets, ValueSet.values),
-                joinedload_all(Language.valuesets, ValueSet.parameter))
-
-        for wordlist in q:
-            res.append(wordlist.to_txt())
-
-        res.append('')
+        for d in ctx.get_query(limit=10000):
+            res.append(d.txt)
         return '\n'.join(res)
 
 
