@@ -61,6 +61,7 @@ class Wordlists(Index):
         res = [txt_header()]
         for d in ctx.get_query(limit=10000):
             res.append(d.txt)
+        res.append('')
         return '\n'.join(res)
 
 
@@ -101,7 +102,7 @@ class Tab(Download):
         ('iso', lambda l: l.code_iso),
     ]
 
-    def create(self, req, filename=None, verbose=True):
+    def create(self, req, filename=None, verbose=True):  # pragma: no cover
         meanings = [(p.name, p.id)
                     for p in DBSession.query(Parameter).order_by(Parameter.pk)]
         tmp = mkdtemp()
