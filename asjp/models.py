@@ -254,25 +254,25 @@ def txt_header(synonyms=2, words=28, year=1700, session=None):
 # specialized common mapper classes
 # -----------------------------------------------------------------------------
 @implementer(interfaces.IParameter)
-class Meaning(Parameter, CustomModelMixin):
+class Meaning(CustomModelMixin, Parameter):
     pk = Column(Integer, ForeignKey('parameter.pk'), primary_key=True)
     core = Column(Boolean, default=False)
 
 
 @implementer(interfaces.IValue)
-class Word(Value, CustomModelMixin):
+class Word(CustomModelMixin, Value):
     pk = Column(Integer, ForeignKey('value.pk'), primary_key=True)
     loan = Column(Boolean, default=False)
 
 
 @implementer(interfaces.IValueSet)
-class Synset(ValueSet, CustomModelMixin):
+class Synset(CustomModelMixin, ValueSet):
     pk = Column(Integer, ForeignKey('valueset.pk'), primary_key=True)
     words = Column(Unicode)
 
 
 @implementer(interfaces.ILanguage)
-class Doculect(Language, CustomModelMixin):
+class Doculect(CustomModelMixin, Language):
     pk = Column(Integer, ForeignKey('language.pk'), primary_key=True)
     wordlist_pk = Column(Integer, ForeignKey('contribution.pk'))
     wordlist = relationship(Contribution, backref=backref('language', uselist=False))
