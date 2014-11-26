@@ -62,6 +62,7 @@ class Wordlists(Index):
         for d in ctx.get_query(limit=10000):
             res.append(d.txt)
         res.append('')
+        res.append('')
         return '\n'.join(res)
 
 
