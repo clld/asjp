@@ -1,23 +1,14 @@
 from setuptools import setup, find_packages
 
 requires = [
-    'clld',
+    'clld>=0.28',
     'clldmpg',
-    'pyramid',
-    'SQLAlchemy',
-    'transaction',
-    'pyramid_tm',
-    'zope.sqlalchemy',
-    'gunicorn',
-    'psycopg2',
-    'waitress',
     ]
 
 tests_require = [
     'WebTest >= 1.3.1', # py3 compat
     'mock',
 ]
-
 
 setup(name='asjp',
       version='0.0',
