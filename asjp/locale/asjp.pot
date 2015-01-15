@@ -1,14 +1,14 @@
 # Translations template for asjp.
-# Copyright (C) 2013 ORGANIZATION
+# Copyright (C) 2015 ORGANIZATION
 # This file is distributed under the same license as the asjp project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2013.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2015.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: asjp 0.0\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-20 10:34+0100\n"
+"POT-Creation-Date: 2015-01-15 16:10+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,19 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: asjp/__init__.py:10
-msgid "Contribution"
-msgstr ""
-
 #: asjp/__init__.py:11
-msgid "Contributions"
+msgid "Language"
 msgstr ""
 
 #: asjp/__init__.py:12
-msgid "Parameter"
+msgid "Languages"
 msgstr ""
 
 #: asjp/__init__.py:13
+msgid "Contribution"
+msgstr ""
+
+#: asjp/__init__.py:14
+msgid "Contributions"
+msgstr ""
+
+#: asjp/__init__.py:15
+msgid "Parameter"
+msgstr ""
+
+#: asjp/__init__.py:16
 msgid "Parameters"
 msgstr ""
 

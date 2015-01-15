@@ -8,6 +8,8 @@ from asjp import models
 
 
 _ = lambda s: s
+_('Language')
+_('Languages')
 _('Contribution')
 _('Contributions')
 _('Parameter')
@@ -32,12 +34,12 @@ def main(global_config, **settings):
     home_comp.append('contribute')
     config.add_settings(home_comp=home_comp)
     config.include('clldmpg')
-    config.register_menu(
-        ('dataset', partial(menu_item, 'dataset', label='Home')),
-        ('languages', partial(menu_item, 'languages')),
-        ('parameters', partial(menu_item, 'parameters')),
-        ('sources', partial(menu_item, 'sources')),
-    )
+    #config.register_menu(
+    #    ('dataset', partial(menu_item, 'dataset', label='Home')),
+    #    ('languages', partial(menu_item, 'languages')),
+    #    ('parameters', partial(menu_item, 'parameters')),
+    #    ('sources', partial(menu_item, 'sources')),
+    #)
     config.add_route('software', '/software')
     config.add_route('contribute', '/contribute')
     return config.make_wsgi_app()

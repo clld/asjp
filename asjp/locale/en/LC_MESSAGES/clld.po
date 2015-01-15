@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2013-12-20 10:34+0100\n"
+"POT-Creation-Date: 2015-01-15 16:10+0100\n"
 "PO-Revision-Date: 2013-12-20 10:34+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -17,19 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 1.3\n"
 
-#: asjp/__init__.py:10
+#: asjp/__init__.py:11
+msgid "Language"
+msgstr "Wordlist"
+
+#: asjp/__init__.py:12
+msgid "Languages"
+msgstr "Wordlists"
+
+#: asjp/__init__.py:13
 msgid "Contribution"
 msgstr "Wordlist"
 
-#: asjp/__init__.py:11
+#: asjp/__init__.py:14
 msgid "Contributions"
 msgstr "Wordlists"
 
-#: asjp/__init__.py:12
+#: asjp/__init__.py:15
 msgid "Parameter"
 msgstr "Meaning"
 
-#: asjp/__init__.py:13
+#: asjp/__init__.py:16
 msgid "Parameters"
 msgstr "Meanings"
 
