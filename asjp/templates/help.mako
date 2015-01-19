@@ -80,7 +80,7 @@
         ordered according to the classification in WALS (<a href="#wals">Haspelmath et al. 2005</a>). Families are ordered
         geographically, genera are ordered alphabetically within families, and languages are ordered
         alphabetically within genera. The format of each list, including the two first lines consisting of
-        metadata, is described below.
+        metadata, is described below in the section <a href="#software">More detail on the software and input file format</a>.
     </p>
 </%util:section>
 <%util:section title="How to get a matrix of ASJP distances" id="matrix">
@@ -97,13 +97,13 @@
         <li>Unzip and save the .exe files in the same folder that your data file is in.</li>
     </ol>
     <p>
-        There is also an Instructions file, but all in the instructions are also contained in the present document.
+        There is also an Instructions file, but all the instructions for the programs described
+        here are also contained in the present document.
         There are different programs:
         <span style="font-family: monospace">asjp62</span>,
         <span style="font-family: monospace">asjp62x</span>,
-        <span style="font-family: monospace">asjp62c</span>,
         <span style="font-family: monospace">asjp62e</span>. To just produce a distance matrix
-        <span style="font-family: monospace">asjp62</span> can be used. The other programs are described below.
+        <span style="font-family: monospace">asjp62</span> can be used. The other programs are described in the next section.
     </p>
     <p>
         You run the program in the DOS Command Prompt as follows. Type:
