@@ -4,7 +4,7 @@
 
 <p>
     The following members of the ASJP consortium have been instrumental in developing the project
-    and building up the database. There help is gratefully acknowledged.
+    and building up the database. Their help is gratefully acknowledged.
 </p>
 
 <h4>Members</h4>
