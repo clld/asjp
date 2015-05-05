@@ -1,7 +1,7 @@
 import re
 
 from sqlalchemy import or_
-from clld.web.datatables import Values
+from clld.web.datatables import Values, Sources
 from clld.web.datatables.base import (
     Col, LinkCol, LinkToMapCol, IntegerIdCol,
 )
@@ -10,6 +10,7 @@ from clld.web.util.helpers import external_link
 from clld.db.models.common import Language, Parameter, Value
 
 from asjp.models import Doculect, Word
+from asjp.util import normalize_classification
 
 
 class Words(Values):
@@ -66,6 +67,13 @@ class ExtLinkCol(Col):
         return label
 
 
+class YesNoCol(Col):
+    __kw__ = dict(choices=[('True', 'yes'), ('False', 'no')])
+
+    def format_value(self, value):
+        return ['no', 'yes'][int(value)]
+
+
 class Wordlists(Languages):
     def col_defs(self):
         return [
@@ -79,20 +87,35 @@ class Wordlists(Languages):
             Col(self, 'latitude', input_size='mini'),
             Col(self, 'longitude', input_size='mini'),
             Col(self, 'number_of_speakers', model_col=Doculect.number_of_speakers),
-            Col(self, 'long_extinct', input_size='mini', model_col=Doculect.long_extinct),
-            Col(self, 'recently_extinct',
+            YesNoCol(
+                self, 'long_extinct',
+                sTitle='Ancient', input_size='mini', model_col=Doculect.long_extinct),
+            YesNoCol(
+                self, 'recently_extinct',
                 input_size='mini', model_col=Doculect.recently_extinct),
             Col(self, 'year_of_extinction',
                 input_size='mini', model_col=Doculect.year_of_extinction),
             Col(self, 'classification_wals',
+                sTitle='Classification WALS',
+                format=lambda i: normalize_classification(i.classification_wals, 'wals'),
                 model_col=Doculect.classification_wals),
             Col(self, 'classification_ethnologue',
+                sTitle='Classification Ethnologue',
+                format=lambda i: normalize_classification(i.classification_ethnologue),
                 model_col=Doculect.classification_ethnologue),
             Col(self, 'classification_glottolog',
+                sTitle='Classification Glottolog',
+                format=lambda i: normalize_classification(i.classification_glottolog),
                 model_col=Doculect.classification_glottolog),
         ]
+
+
+class Refs(Sources):
+    def col_defs(self):
+        return Sources.col_defs(self)[:-1]
 
 
 def includeme(config):
     config.register_datatable('values', Words)
     config.register_datatable('languages', Wordlists)
+    config.register_datatable('sources', Refs)

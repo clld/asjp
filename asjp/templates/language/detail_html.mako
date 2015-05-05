@@ -51,7 +51,7 @@ ${request.get_datatable('values', h.models.Value, language=ctx).render()}
         % for label, attr in [('WALS', 'wals'), ('', 'glottolog'), ('', 'ethnologue')]:
             % if getattr(ctx, 'classification_' + attr):
             <dt>${label or attr.capitalize()}</dt>
-            <dd>${getattr(ctx, 'classification_' + attr).replace(',' , ' > ')}</dd>
+            <dd>${u.normalize_classification(getattr(ctx, 'classification_' + attr), attr).replace(', ' , ' > ')}</dd>
             % endif
         % endfor
         </dl>

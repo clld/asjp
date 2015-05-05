@@ -1,7 +1,7 @@
 <%inherit file="../home_comp.mako"/>
 
 <div class="row-fluid">
-<h2>${request.dataset.description}</h2>
+<h2>Welcome to the ASJP Database</h2>
 </div>
 
 <div class="row-fluid">
@@ -15,7 +15,7 @@
         <img width="200" height="200" src="${request.static_url('asjp:static/logo_asjp.gif')}" class="image"/>
     </div>
     <div class="span4">
-
+        <h3>Coverage:</h3>
         <table class="table table-nonfluid">
             <tbody>
             <tr>
@@ -30,6 +30,15 @@
                 <th>Words</th><td class="right">${words}</td>
             </tr>
             <tr>
+                <th>Distinct Ethnologue families</th><td class="right">${ethnologue_families}</td>
+            </tr>
+            <tr>
+                <th>
+                    Distinct ${h.external_link('http://glottolog.org/glottolog/family', label='Glottolog families')}
+                </th>
+                <td class="right">${glottolog_families}</td>
+            </tr>
+            <tr>
                 <th>Distinct ISO 639-3 languages</th><td class="right">${iso_langs}</td>
             </tr>
             <tr>
@@ -39,15 +48,6 @@
                     </a>
                 </th>
                 <td class="right">3156</td>
-            </tr>
-            <tr>
-                <th>Ethnologue families</th><td class="right">${ethnologue_families}</td>
-            </tr>
-            <tr>
-                <th>
-                    ${h.external_link('http://glottolog.org/glottolog/family', label='Glottolog families')}
-                </th>
-                <td class="right">${glottolog_families}</td>
             </tr>
             </tbody>
         </table>
