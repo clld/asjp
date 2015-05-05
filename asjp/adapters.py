@@ -7,11 +7,11 @@ from sqlalchemy.orm import joinedload_all
 
 from clld.util import binary_type
 from clld.db.meta import DBSession
-from clld.db.models.common import ValueSet, Language, Parameter, Dataset
+from clld.db.models.common import ValueSet, Language, Parameter, Dataset, Value
 from clld.web.adapters.base import Representation, Index
 from clld.web.adapters.geojson import GeoJsonLanguages, pacific_centered_coordinates
 from clld.web.adapters.download import Download
-from clld.interfaces import ILanguage, IIndex
+from clld.interfaces import ILanguage, IIndex, IDataset
 from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
 from clld.lib.dsv import UnicodeWriter
 
@@ -122,7 +122,27 @@ class Tab(Download):
         rmtree(tmp)
 
 
+class Cldf(Representation):
+    extension = str('cldf.csv')
+    mimetype = str('text/csv')  # FIXME: declare header?
+
+    def render(self, ctx, req):
+        fid = req.route_url('parameter', id='xxx').replace('xxx', '{0}')
+        lid = req.route_url('language', id='xxx').replace('xxx', '{0}')
+        with UnicodeWriter() as writer:
+            writer.writerow(['Language_ID', 'Feature_ID', 'Value'])
+            for _lid, _fid, v in DBSession.query(
+                        Language.id, Parameter.id, Value.name)\
+                    .filter(Language.pk == ValueSet.language_pk)\
+                    .filter(Parameter.pk == ValueSet.parameter_pk)\
+                    .filter(Value.valueset_pk == ValueSet.pk)\
+                    .order_by(Parameter.pk, Language.id):
+                writer.writerow([lid.format(_lid), fid.format(_fid), v])
+            return writer.read()
+
+
 def includeme(config):
+    config.register_adapter(Cldf, IDataset)
     config.register_adapter(GeoJsonAllLanguages, ILanguage, IIndex)
     config.register_adapter(Wordlists, ILanguage, IIndex)
     config.register_adapter(Wordlist, ILanguage)
