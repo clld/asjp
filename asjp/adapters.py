@@ -137,7 +137,8 @@ class Cldf(Representation):
                     .filter(Parameter.pk == ValueSet.parameter_pk)\
                     .filter(Value.valueset_pk == ValueSet.pk)\
                     .order_by(Parameter.pk, Language.id):
-                writer.writerow([lid.format(_lid), fid.format(_fid), v])
+                if v:
+                    writer.writerow([lid.format(_lid), fid.format(_fid), v])
             return writer.read()
 
 
