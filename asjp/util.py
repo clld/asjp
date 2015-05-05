@@ -3,6 +3,7 @@ import re
 
 from clld.db.meta import DBSession
 from clld.db.models import common
+from clld.web.util.helpers import get_referents
 
 from asjp import models
 
@@ -17,6 +18,11 @@ def normalize_classification(text, type=None):
         else:
             new_nodes.append(' '.join(w.capitalize() for w in re.split('_|\-', node)))
     return ', '.join(new_nodes)
+
+
+def source_detail_html(context=None, request=None, **kw):
+    return dict(referents=get_referents(
+        context, exclude='valueset sentence contribution'.split()))
 
 
 def dataset_detail_html(context=None, request=None, **kw):
