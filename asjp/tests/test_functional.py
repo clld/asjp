@@ -11,6 +11,8 @@ class Tests(TestWithApp):
 
     def test_home(self):
         self.app.get_html('/')
+        self.app.get_html('/contribute')
+        self.app.get('/void.cldf.csv')
 
     def test_meanings(self):
         self.app.get_dt('/parameters')

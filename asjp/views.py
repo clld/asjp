@@ -1,5 +1,3 @@
-import json
-
 from pyramid.view import view_config
 from path import path
 
