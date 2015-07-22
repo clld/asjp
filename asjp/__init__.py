@@ -1,6 +1,5 @@
-from functools import partial
+from pyramid.config import Configurator
 
-from clld.web.app import get_configurator, menu_item
 from clld import interfaces
 
 # we must make sure custom models are known at database initialization!
@@ -25,21 +24,13 @@ def link_attrs(req, obj, **kw):
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    utilities = [
-        (link_attrs, interfaces.ILinkAttrs),
-    ]
-    config = get_configurator('asjp', *utilities, **dict(settings=settings))
+    config = Configurator(settings=settings)
+    config.include('clldmpg')
+    config.registry.registerUtility(link_attrs, interfaces.ILinkAttrs)
     home_comp = config.registry.settings['home_comp']
     home_comp.append('software')
     home_comp.append('contribute')
     config.add_settings(home_comp=home_comp)
-    config.include('clldmpg')
-    #config.register_menu(
-    #    ('dataset', partial(menu_item, 'dataset', label='Home')),
-    #    ('languages', partial(menu_item, 'languages')),
-    #    ('parameters', partial(menu_item, 'parameters')),
-    #    ('sources', partial(menu_item, 'sources')),
-    #)
     config.add_route('software', '/software')
     config.add_route('contribute', '/contribute')
     return config.make_wsgi_app()

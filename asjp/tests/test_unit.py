@@ -38,3 +38,14 @@ KICHEE_ALDEA_ARGUETA_SOLOLA{May.MAYAN|Mayan,Yucatecan-CoreMayan,K'ichean-Mamean,
         d.year_of_extinction = 1800
         d.to_txt()
         assert d.id == 'KICHEE_ALDEA_ARGUETA_SOLOLA'
+        d.wals_genus = 'x'
+        d.wals_family = 'x'
+        assert d.href('wals_genus')
+        assert d.href('wals_family')
+        assert d.href('wals')
+        self.assertEquals(d.format_words(None), '')
+
+    def test_normalize_classification(self):
+        from asjp.util import normalize_classification
+
+        self.assertEquals(normalize_classification(None), '')

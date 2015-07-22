@@ -9,7 +9,7 @@ from clld.util import binary_type
 from clld.db.meta import DBSession
 from clld.db.models.common import ValueSet, Language, Parameter, Dataset, Value
 from clld.web.adapters.base import Representation, Index
-from clld.web.adapters.geojson import GeoJsonLanguages, pacific_centered_coordinates
+from clld.web.adapters.geojson import GeoJsonLanguages
 from clld.web.adapters.download import Download
 from clld.interfaces import ILanguage, IIndex, IDataset
 from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
@@ -26,6 +26,14 @@ class _Language(object):
         self.latitude = latitude
         self.id = id_
 
+    @property
+    def __geo_interface__(self):
+        return {
+            'id': self.id,
+            'type': 'Feature',
+            'properties': {'name': self.name},
+            'geometry': {'type': 'Point', 'coordinates': (self.longitude, self.latitude)}}
+
     def __json__(self, req):
         return self.__dict__
 
@@ -36,9 +44,6 @@ class GeoJsonAllLanguages(GeoJsonLanguages):
             Language.pk, Language.name, Language.longitude, Language.latitude, Language.id
         ):
             yield _Language(*row)
-
-    def get_coordinates(self, language):
-        return pacific_centered_coordinates(language)
 
 
 class Wordlist(Representation):
@@ -66,11 +71,6 @@ class Wordlists(Index):
         return '\n'.join(res)
 
 
-class _GeoJsonSelectedLanguages(GeoJsonSelectedLanguages):
-    def get_coordinates(self, language):
-        return pacific_centered_coordinates(language)
-
-
 class MapView(Index):
     extension = str('map.html')
     mimetype = str('text/vnd.clld.map+html')
@@ -80,8 +80,7 @@ class MapView(Index):
     def template_context(self, ctx, req):
         languages = list(ctx.get_query(limit=8000))
         return {
-            'map': SelectedLanguagesMap(
-                ctx, req, languages, geojson_impl=_GeoJsonSelectedLanguages),
+            'map': SelectedLanguagesMap(ctx, req, languages),
             'languages': languages}
 
 

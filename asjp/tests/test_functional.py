@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from path import path
 
 from clld.tests.util import TestWithApp
@@ -12,6 +14,7 @@ class Tests(TestWithApp):
     def test_home(self):
         self.app.get_html('/')
         self.app.get_html('/contribute')
+        self.app.get_html('/software')
         self.app.get('/void.cldf.csv')
 
     def test_meanings(self):
@@ -32,3 +35,7 @@ class Tests(TestWithApp):
     def test_words(self):
         self.app.get_dt('/values?language=KICHEE_ALDEA_ARGUETA_SOLOLA')
         self.app.get_dt('/values?parameter=1')
+
+    def test_source(self):
+        self.app.get_dt('/sources')
+        self.app.get_html('/sources/1')
