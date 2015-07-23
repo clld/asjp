@@ -26,14 +26,6 @@ class _Language(object):
         self.latitude = latitude
         self.id = id_
 
-    @property
-    def __geo_interface__(self):
-        return {
-            'id': self.id,
-            'type': 'Feature',
-            'properties': {'name': self.name},
-            'geometry': {'type': 'Point', 'coordinates': (self.longitude, self.latitude)}}
-
     def __json__(self, req):
         return self.__dict__
 
