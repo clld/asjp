@@ -86,7 +86,6 @@ class Wordlists(Languages):
                 sTitle='WALS', input_size='mini', model_col=Doculect.code_wals),
             Col(self, 'latitude', input_size='mini'),
             Col(self, 'longitude', input_size='mini'),
-            Col(self, 'number_of_speakers', model_col=Doculect.number_of_speakers),
             YesNoCol(
                 self, 'long_extinct',
                 sTitle='Ancient', input_size='mini', model_col=Doculect.long_extinct),
@@ -99,10 +98,6 @@ class Wordlists(Languages):
                 sTitle='Classification WALS',
                 format=lambda i: normalize_classification(i.classification_wals, 'wals'),
                 model_col=Doculect.classification_wals),
-            Col(self, 'classification_ethnologue',
-                sTitle='Classification Ethnologue',
-                format=lambda i: normalize_classification(i.classification_ethnologue),
-                model_col=Doculect.classification_ethnologue),
             Col(self, 'classification_glottolog',
                 sTitle='Classification Glottolog',
                 format=lambda i: normalize_classification(i.classification_glottolog),
