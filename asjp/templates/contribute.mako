@@ -22,7 +22,7 @@
     % for iso in sorted(missing.keys()):
         <tr>
             <td>
-                ${h.external_link("http://www.sil.org/iso639-3/documentation.asp?id=" + iso, iso)}
+                ${h.external_link("http://www-01.sil.org/iso639-3/documentation.asp?id=" + iso, iso)}
             </td>
             <td>
                 ${h.external_link("http://www.ethnologue.com/language/" + iso, missing[iso])}

@@ -5,15 +5,15 @@ import os
 
 from sqlalchemy.orm import joinedload_all
 
-from clld.util import binary_type
+from clldutils.misc import binary_type
 from clld.db.meta import DBSession
 from clld.db.models.common import ValueSet, Language, Parameter, Dataset, Value
 from clld.web.adapters.base import Representation, Index
 from clld.web.adapters.geojson import GeoJsonLanguages
 from clld.web.adapters.download import Download
 from clld.interfaces import ILanguage, IIndex, IDataset
-from clld.web.maps import SelectedLanguagesMap, GeoJsonSelectedLanguages
-from clld.lib.dsv import UnicodeWriter
+from clld.web.maps import SelectedLanguagesMap
+from clldutils.dsv import UnicodeWriter
 
 from asjp.models import txt_header, Doculect
 

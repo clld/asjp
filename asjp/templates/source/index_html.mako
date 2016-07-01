@@ -4,11 +4,6 @@
 <%block name="title">${_('Sources')}</%block>
 
 <h2>${_('Sources')}</h2>
-<p>
-    This page, which is still partly under construction, provides sources
-    for the lexical data. The general source for speaker numbers is
-    ${h.external_link('http://www.ethnologue.com/', label='Ethnologue')}.
-</p>
 <div>
     ${ctx.render()}
 </div>

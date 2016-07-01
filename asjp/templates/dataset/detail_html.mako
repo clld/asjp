@@ -1,7 +1,7 @@
 <%inherit file="../home_comp.mako"/>
 
 <div class="row-fluid">
-<h2>Welcome to the ASJP Database</h2>
+<h2>Welcome to ${ctx.name}</h2>
     <p class="lead">
         The database of the Automated Similarity Judgment Program (ASJP) aims to
         contain 40-item word lists of all the world's languages. A lexical
@@ -19,7 +19,7 @@
     <div class="span4 well well-small">
         <h3>How to cite:</h3>
         <p>
-            Wichmann, Søren, André Müller, Annkathrin Wett, Viveka Velupillai, Julia Bischoffberger, Cecil H. Brown, Eric W. Holman, Sebastian Sauppe, Zarina Molochieva, Pamela Brown, Harald Hammarström, Oleg Belyaev, Johann-Mattis List, Dik Bakker, Dmitry Egorov, Matthias Urban, Robert Mailhammer, Agustina Carrizo, Matthew S. Dryer, Evgenia Korovina, David Beck, Helen Geyer, Patience Epps, Anthony Grant, and Pilar Valenzuela. 2013. The ASJP Database (version 16).
+            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2016. ${ctx.name} (version 17).
         </p>
     </div>
     <div class="span4" style="padding: 20px; text-align: center;">
@@ -57,7 +57,7 @@
                         Missing ISO 639-3 languages (from Ethnologue 17)
                     </a>
                 </th>
-                <td class="right">3156</td>
+                <td class="right">2893</td>
             </tr>
             </tbody>
         </table>

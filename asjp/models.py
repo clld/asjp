@@ -23,7 +23,7 @@ from clld.db.models.common import (
     ValueSet,
     Parameter,
 )
-from clld.util import nfilter
+from clldutils.misc import nfilter
 
 # see
 # Brown, Cecil H., Eric W. Holman, Søren Wichmann, and Viveka Vilupillai. 2008.
@@ -330,6 +330,8 @@ class Doculect(CustomModelMixin, Language):
         doculect.wordlist = Contribution(
             id=kw['id'], language=doculect, name=doculect.id)
 
+        parameters = {p.id: p for p in session.query(Parameter)}
+
         for line in lines[2:]:
             if '\t' in line:
                 wid, words, comment = parse_word(line)
@@ -342,7 +344,7 @@ class Doculect(CustomModelMixin, Language):
                     description=comment,
                     language=doculect,
                     contribution=doculect.wordlist,
-                    parameter=Parameter.get(wid, session=session))
+                    parameter=parameters[wid])
 
                 for i, word in enumerate(words):
                     id_ = '%s-%s' % (vsid, i + 1)

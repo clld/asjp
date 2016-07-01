@@ -1,9 +1,9 @@
 from clld.web.assets import environment
-from path import path
+from clldutils.path import Path
 
 import asjp
 
 
 environment.append_path(
-    path(asjp.__file__).dirname().joinpath('static'), url='/asjp:static/')
+    Path(asjp.__file__).parent.joinpath('static').as_posix(), url='/asjp:static/')
 environment.load_path = list(reversed(environment.load_path))

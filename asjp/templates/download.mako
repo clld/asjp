@@ -121,6 +121,15 @@
                 Wichmann, Søren, André Müller, Annkathrin Wett, Viveka Velupillai, Julia Bischoffberger, Cecil H. Brown, Eric W. Holman, Sebastian Sauppe, Zarina Molochieva, Pamela Brown, Harald Hammarström, Oleg Belyaev, Johann-Mattis List, Dik Bakker, Dmitry Egorov, Matthias Urban, Robert Mailhammer, Agustina Carrizo, Matthew S. Dryer, Evgenia Korovina, David Beck, Helen Geyer, Pattie Epps, Anthony Grant, and Pilar Valenzuela. 2013. The ASJP Database (version 16).
             </td>
         </tr>
+        <tr>
+            <td>
+                <a href="${request.static_url('asjp:static/listss17.zip')}">017 [ZIP]</a>
+            </td>
+            <td>2016</td>
+            <td>
+                Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2016. The ASJP Database (version 17).
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>

@@ -42,12 +42,11 @@
 </ul>
 <h4>Student Assistants</h4>
 <ul>
-    <li>Julia Bishoffberger</li>
-    <li>Agustina Carrizo
-    (former assistant)</li>
-    <li>Zarina Molochieva
-    (former assistant)</li>
-    <li>Annkathrin Wett
-    (former assistant)</li>
+    <li>Julia Bishoffberger (former assistant)</li>
+    <li>Agustina Carrizo (former assistant)</li>
+    <li>Zarina Molochieva (former assistant)</li>
+    <li>Tessa de Mol-van Valen</li>
+    <li>Siyao Peng</li>
+    <li>Annkathrin Wett (former assistant)</li>
 </ul>
 

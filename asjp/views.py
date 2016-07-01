@@ -1,7 +1,7 @@
 from pyramid.view import view_config
-from path import path
+from clldutils.path import Path
 
-from clld.util import jsonload
+from clldutils.jsonlib import load
 
 import asjp
 
@@ -13,6 +13,6 @@ def software(req):
 
 @view_config(route_name='contribute', renderer='contribute.mako')
 def contribute(req):
-    return {'missing': jsonload(
-        path(asjp.__file__).dirname().joinpath(
+    return {'missing': load(
+        Path(asjp.__file__).parent.joinpath(
             'static', 'ethnologue17_diff.json'))['missing']}
