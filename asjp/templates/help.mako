@@ -25,7 +25,7 @@
     <p>Alternatively,</p>
     <ol>
         <li>Click on <a href="${request.route_url('download')}">Download</a>.</li>
-        <li>Click on 016[ZIP].</li>
+        <li>Click on 017[ZIP].</li>
         <li>Click on OK.</li>
         <li>Double click on listss16 and wait 30 sec or so.</li>
     </ol>
