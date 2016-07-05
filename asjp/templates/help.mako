@@ -27,7 +27,7 @@
         <li>Click on <a href="${request.route_url('download')}">Download</a>.</li>
         <li>Click on 017[ZIP].</li>
         <li>Click on OK.</li>
-        <li>Double click on listss16 and wait 30 sec or so.</li>
+        <li>Double click on listss17 and wait 30 sec or so.</li>
     </ol>
     <p>
         Either way, you should get the complete database, set up to run on ASJP programs. Now you can
@@ -77,7 +77,7 @@
     </p>
     <p>
         Then there is a wordlist for each language, on consecutive lines. In the full database, lists are
-        ordered according to the classification in WALS (<a href="#wals">Haspelmath et al. 2005</a>). Families are ordered
+        ordered according to the classification in WALS (<a href="#wals">Dryer and Haspelmath 2013</a>). Families are ordered
         geographically, genera are ordered alphabetically within families, and languages are ordered
         alphabetically within genera. The format of each list, including the two first lines consisting of
         metadata, is described below in the section <a href="#software">More detail on the software and input file format</a>.
@@ -211,7 +211,7 @@ Stop - Program terminated.
                     <span style="font-family: monospace">asjp62</span> and
                     <span style="font-family: monospace">asjp62x</span> ignore it.
                     The ASJP database uses the families and genera defined in WALS
-                    (<a href="#wals">Haspelmath et al. 2005</a>)
+                    (<a href="#wals">Dryer and Haspelmath 2013</a>)
                     but the computer will accept whatever definition is specified for the languages as
                     described below for Col. 2 in the second line of metadata.
                 </dd>
@@ -250,8 +250,8 @@ Stop - Program terminated.
             position in three classifications, without any blank spaces. The name is taken from the source of
             the list; it never starts with a number or a blank. Between { and | is the classification of the
             language in WALS. It’s of the form Fam.GENUS, with the family name abbreviated and the genus name
-            spelled out. Between | and @ is the classification of the language in Ethnologue (<a href="#lewis-et-al-2014">Lewis et al. 2014</a>),
-            and between @ and } is the classification in Glottolog (<a href="#glottolog">Hammarström et al. 2014</a>). Names of taxonomic
+            spelled out. Between | and @ is the classification of the language in Ethnologue (<a href="#lewis-et-al-2016">Lewis et al. 2016</a>),
+            and between @ and } is the classification in Glottolog (<a href="#glottolog">Hammarström et al. 2016</a>). Names of taxonomic
             groups and subgroups are separated by commas and ordered from most inclusive to least inclusive.
             Languages not in a given classification are classified from information in the source for the list.
             If this information is insufficient for WALS, the family and genus are called Unknown. If it’s
@@ -278,7 +278,7 @@ Stop - Program terminated.
                 </dd>
                 <dt>Col. 19-30:</dt>
                 <dd>
-                    number of speakers, from Ethnologue (<a href="#lewis-et-al-2014">Lewis et al. 2014</a>);
+                    number of speakers, from Ethnologue (<a href="#lewis-et-al-2016">Lewis et al. 2016</a>);
                     0 if the number of speakers is unknown; -1 if the language is recently extinct;
                     -2 if the language is long extinct; or if the approximate date of extinction is known,
                     the date is preceded by a minus sign. If there is a date in the first line of the entire file,
@@ -318,14 +318,14 @@ Stop - Program terminated.
         <i>STUF – Language Typology and Universals</i>:285-308.
     </p>
     <p id="glottolog">
-        Hammarström, Harald, Robert Forkel, Martin Haspelmath, and Sebastian Nordhoff. 2014.
-        Glottolog 2.3. Leipzig: Max Planck Institute for Evolutionary Anthropology.
+        Hammarström, Harald, Robert Forkel, Martin Haspelmath, and Sebastian Bank. 2016.
+        Glottolog 2.7. Jena: Max Planck Institute for the Science of Human History.
         (${h.external_link('http://glottolog.org')})
     </p>
     <p id="wals">
-        Haspelmath, Martin, Matthew Dryer, David Gil, and Bernard Comrie (eds.). 2005.
-        <i>The World Atlas of Language Structures</i>.
-        Oxford: Oxford University Press.
+        Dryer, Matthew S., and Martin Haspelmath (eds.). 2013.
+        <i>The World Atlas of Language Structures Online</i>.
+        Leipzig: Max Planck Institute for Evolutionary Anthropology.
         (${h.external_link('http://wals.info/')})
     </p>
     <p id="holman-et-al-2008">
@@ -333,9 +333,9 @@ Stop - Program terminated.
         Explorations in automated language comparison.
         <i>Folia Linguistica</i> 42:331-354.
     </p>
-    <p id="lewis-et-al-2014">
-        Lewis, M. Paul, Gary F. Simons, and Charles D. Fennig (eds.). 2014.
-        <i>Ethnologue: Languages of the World, Seventeenth edition</i>.
+    <p id="lewis-et-al-2016">
+        Lewis, M. Paul, Gary F. Simons, and Charles D. Fennig (eds.). 2016.
+        <i>Ethnologue: Languages of the World, Nineteenth edition</i>.
         Dallas, Texas: SIL International.
         Online version: ${h.external_link('http://www.ethnologue.com')}.
     </p>
