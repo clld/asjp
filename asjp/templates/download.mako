@@ -1,29 +1,17 @@
 <%inherit file="home_comp.mako"/>
+<%namespace name="clldmpgutil" file="clldmpg_util.mako"/>
 
 <h3>Downloads</h3>
 
 <div class="row-fluid">
-<div class="span5 well well-small">
-    <dl>
-    % for model, dls in h.get_downloads(request):
-        <dt>${_(model)}</dt>
-        % for dl in dls:
-        <dd>
-            <a href="${dl.url(request)}">${dl.label(req)}</a>
-        </dd>
-        % endfor
-    % endfor
-    </dl>
+<div class="span6">
+    ${clldmpgutil.downloads(request)}
 </div>
-##<div class="span6">
-##    <p>
-##        Downloads are provided as
-##        ${h.external_link("http://en.wikipedia.org/wiki/Zip_%28file_format%29", label="zip archives")}
-##        bundling the data and a
-##        ${h.external_link("http://en.wikipedia.org/wiki/README", label="README")}
-##        file.
-##    </p>
-##</div>
+<div class="span6">
+    <div class="well well-small">
+        ${clldmpgutil.downloads_legend()}
+    </div>
+</div>
 </div>
 <div class="row-fluid">
     <h4>Current and earlier versions of the ASJP World Language Tree of Lexical Similarity</h4>

@@ -77,6 +77,7 @@ class MapView(Index):
 
 
 class Tab(Download):
+    description = "The ASJP database in ASJP's custom text format."
     ext = 'tab'
 
     fields = [
