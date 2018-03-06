@@ -19,7 +19,7 @@
     <div class="span4 well well-small">
         <h3>How to cite:</h3>
         <p>
-            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2016. ${ctx.name} (version 17).
+            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2018. ${ctx.name} (version 18).
         </p>
     </div>
     <div class="span4" style="padding: 20px; text-align: center;">
@@ -57,7 +57,7 @@
                         Missing ISO 639-3 languages (from Ethnologue 17)
                     </a>
                 </th>
-                <td class="right">2893</td>
+                <td class="right">${missing_iso}</td>
             </tr>
             </tbody>
         </table>

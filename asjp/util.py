@@ -4,8 +4,15 @@ import re
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.web.util.helpers import get_referents
+from clldutils.path import Path
+from clldutils.jsonlib import load
 
+import asjp
 from asjp import models
+
+
+def missing_iso():
+    return load(Path(asjp.__file__).parent.joinpath('static', 'ethnologue17_diff.json'))
 
 
 def normalize_classification(text, type=None):
@@ -54,5 +61,6 @@ count | 4401
             'select count(*) from (select distinct valueset_pk from value) as s')
         .fetchone()[0],
         'words': DBSession.query(common.Value.pk).count(),
+        'missing_iso': len(missing_iso()),
     }
-    return stats
+    return {k: '{0:,}'.format(n) for k, n in stats.items()}

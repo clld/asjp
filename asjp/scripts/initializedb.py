@@ -72,13 +72,10 @@ def get_source(source, id_):
 
 def main(args):
     meta = parse_meta(args)
-    print(len(meta))
-    print(sum(len(m.sources) for m in meta.values()))
     sources = {}
     for m in meta.values():
         for s in m.sources:
             sources[s] = None
-    print(len(sources), 'distinct')
     for i, s in enumerate(sources):
         sources[s] = get_source(s, i + 1)
 
@@ -104,7 +101,7 @@ def main(args):
 
     wals_genera = {row[0]: row[0] for row in wals.execute('select id from genus')}
 
-    with args.data_file('listss17.txt').open(encoding='latin1') as fp:
+    with args.data_file('listss18.txt').open(encoding='latin1') as fp:
         wordlists = ['\n'.join(lines) for lines in parse(fp)]
 
     dataset = common.Dataset(
@@ -157,7 +154,7 @@ def main(args):
         if id_ in transcribers:
             assert name == transcribers.pop(id_)
         contributor = data.add(common.Contributor, id_, id=id_, name=name)
-        if id_ in ['SW', 'CB', 'EH']:
+        if id_ in ['SW', 'EH', 'CB']:
             DBSession.add(common.Editor(
                 dataset=dataset,
                 ord=i + 1,
@@ -194,7 +191,7 @@ def main(args):
             DBSession.add(
                 common.LanguageSource(language_pk=lang.pk, source_pk=sources[source].pk))
 
-    assert not list(meta.keys())
+    print(list(meta.keys()))
 
 
 def prime_cache(args):

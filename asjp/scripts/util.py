@@ -66,7 +66,14 @@ class Meta(object):
             if initial:
                 if initial == 'Matthias Pache':
                     initial = 'MP'
-                assert initial in transcriber_map
+                if initial == 'MDS':
+                    initial = 'MSD'
+                if initial == 'TVV -> AM':
+                    initial = 'AM'
+                if initial == 'SP':
+                    initial = 'PS'
+                if initial not in transcriber_map:
+                    raise ValueError(initial)
                 self.transcribers.append(initial)
 
         self.sources = list(itersources(row))
@@ -83,8 +90,8 @@ def get_transcriber_map(args):
 def parse_meta(args):
     transcriber_map = get_transcriber_map(args)
     sources = {}
-    wb = xlrd.open_workbook(args.data_file('sources_listss17.xlsx').as_posix())
-    sheet = wb.sheet_by_name('Sheet1')
+    wb = xlrd.open_workbook(args.data_file('sources_listss18.xlsx').as_posix())
+    sheet = wb.sheet_by_name('SourcesListss17')
     for i in range(sheet.nrows):
         row = [col.value for col in sheet.row(i)]
         if i == 0:

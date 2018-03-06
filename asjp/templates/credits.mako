@@ -45,8 +45,8 @@
     <li>Julia Bishoffberger (former assistant)</li>
     <li>Agustina Carrizo (former assistant)</li>
     <li>Zarina Molochieva (former assistant)</li>
-    <li>Tessa de Mol-van Valen</li>
-    <li>Siyao Peng</li>
+    <li>Tessa de Mol-van Valen (former assistant)</li>
+    <li>Siyao Peng (former assistant)</li>
     <li>Annkathrin Wett (former assistant)</li>
 </ul>
 
