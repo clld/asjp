@@ -18,12 +18,19 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     zip_safe=False,
-    install_requires=['clldmpg~=3.1'],
+    install_requires=[
+        'clld~=4.0',
+        'clldmpg~=3.1',
+        'sqlalchemy',
+        'waitress',
+    ],
     extras_require={
-        'dev': ['flake8', 'waitress'],
-        'test': [
+        'dev': [
+            'flake8',
             'psycopg2',
             'tox',
+        ],
+        'test': [
             'mock',
             'pytest>=3.1',
             'pytest-clld',
