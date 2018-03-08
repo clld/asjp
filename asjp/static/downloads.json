@@ -1,29 +1,56 @@
 {
+    "18": {
+        "bitstreams": [
+            {
+                "last-modified": 1520497728557,
+                "checksum": "7097c4dbeb5669636f2f425c0c623ddf",
+                "created": 1520497728412,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "asjp_dataset.cldf.zip",
+                "filesize": 4234715,
+                "content-type": "application/zip"
+            },
+            {
+                "last-modified": 1520497724748,
+                "checksum": "8a224b9eac7f3f6af3877cf2deb7dfdd",
+                "created": 1520497724495,
+                "checksum-algorithm": "MD5",
+                "bitstreamid": "asjp_dataset.tab.zip",
+                "filesize": 1089756,
+                "content-type": "application/zip"
+            }
+        ],
+        "oid": "EAEA0-92A9-F291-49B1-0",
+        "metadata": {
+            "title": "asjp 18 - downloads",
+            "creator": "pycdstar"
+        }
+    },
     "17": {
         "bitstreams": [
             {
-                "last-modified": 1516177642224,
-                "checksum": "b4a33e2a0149277012b9c3dd95fa0bf8",
                 "created": 1516177641579,
-                "checksum-algorithm": "MD5",
+                "checksum": "b4a33e2a0149277012b9c3dd95fa0bf8",
                 "bitstreamid": "asjp_dataset.cldf.zip",
+                "checksum-algorithm": "MD5",
+                "last-modified": 1516177642224,
                 "filesize": 11421160,
                 "content-type": "application/zip"
             },
             {
-                "last-modified": 1516177438390,
-                "checksum": "5e93ef79332d89569401c0e16c0832f5",
                 "created": 1516177438214,
-                "checksum-algorithm": "MD5",
+                "checksum": "5e93ef79332d89569401c0e16c0832f5",
                 "bitstreamid": "asjp_dataset.tab.zip",
+                "checksum-algorithm": "MD5",
+                "last-modified": 1516177438390,
                 "filesize": 1037780,
                 "content-type": "application/zip"
             }
         ],
         "oid": "EAEA0-5E8D-A9F9-399E-0",
         "metadata": {
-            "title": "asjp 1.0 - downloads",
-            "creator": "pycdstar"
+            "creator": "pycdstar",
+            "title": "asjp 1.0 - downloads"
         }
     }
 }
