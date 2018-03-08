@@ -18,5 +18,7 @@ A new release is now done as follows:
 6. Adapt the citation information in `asjp/templates/dataset/detail_html.mako`
 7. Release this repository to trigger archiving with ZENODO.
 8. Release `clld/asjp-data` to trigger archiving with ZENODO.
-9. Deploy to the production server.
-
+9. Create downloads running `clld-create-downloads development.ini`.
+10. Upload downloads to cdstar running `clldmpg --version=<version> dl2cdstar`.
+11. Commit and push the updated cdstar catalogs.
+12. Deploy to the production server.
