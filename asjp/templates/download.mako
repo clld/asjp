@@ -1,9 +1,16 @@
 <%inherit file="home_comp.mako"/>
 <%namespace name="clldmpgutil" file="clldmpg_util.mako"/>
+<%namespace name="util" file="util.mako"/>
+
+<%def name="sidebar()">
+<%util:well title="Custom downloads">
+${clldmpgutil.downloads(request)}
+</%util:well>
+</%def>
+
 
 <h3>Downloads</h3>
 
-<div class="row-fluid">
     <h4>Current and earlier versions of the ASJP Database</h4>
     <table class="table table-nonfluid">
         <thead>
@@ -119,4 +126,3 @@
             </tr>
         </tbody>
     </table>
-</div>

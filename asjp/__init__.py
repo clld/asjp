@@ -1,6 +1,9 @@
+from __future__ import unicode_literals
 from pyramid.config import Configurator
 
 from clld import interfaces
+from clld.web.adapters.cldf import CldfConfig
+from clld.db.models.common import Value
 
 # we must make sure custom models are known at database initialization!
 from asjp import models
@@ -15,6 +18,18 @@ _('Parameter')
 _('Parameters')
 
 
+class ASJPCldfConfig(CldfConfig):
+    def custom_schema(self, req, ds):
+        ds.add_columns('FormTable', {'name': 'Loan', 'datatype': 'boolean'})
+
+    def convert(self, model, item, req):
+        res = CldfConfig.convert(self, model, item, req)
+        if model == Value:
+            res['Loan'] = item.loan
+        return res
+
+
+
 def link_attrs(req, obj, **kw):
     if interfaces.IContribution.providedBy(obj):
         kw['href'] = req.route_url('language', id=obj.id, **kw.pop('url_kw', {}))
@@ -27,6 +42,7 @@ def main(global_config, **settings):
     config = Configurator(settings=settings)
     config.include('clldmpg')
     config.registry.registerUtility(link_attrs, interfaces.ILinkAttrs)
+    config.registry.registerUtility(ASJPCldfConfig(), interfaces.ICldfConfig)
     home_comp = config.registry.settings['home_comp']
     home_comp.append('software')
     home_comp.append('contribute')
