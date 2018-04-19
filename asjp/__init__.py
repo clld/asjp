@@ -26,6 +26,7 @@ class ASJPCldfConfig(CldfConfig):
         res = CldfConfig.convert(self, model, item, req)
         if model == Value:
             res['Loan'] = item.loan
+            res['Source'] = [s.id for s in item.valueset.language.sources]
         return res
 
 
