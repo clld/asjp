@@ -1,5 +1,10 @@
 <%inherit file="home_comp.mako"/>
 
+<h3>Funding</h3>
+
+<p>The <em>ASJP Database</em> development has been partially funded by the Max Planck Society for the Advancement of Science and the European Research Council (ERC advanced grant MesAndLin(g)k, proj. no. 295918).</p>
+
+
 <h3>Credits</h3>
 
 <p>
