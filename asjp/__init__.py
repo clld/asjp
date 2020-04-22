@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from pyramid.config import Configurator
 
 from clld import interfaces
@@ -28,7 +27,6 @@ class ASJPCldfConfig(CldfConfig):
             res['Loan'] = item.loan
             res['Source'] = [s.id for s in item.valueset.language.sources]
         return res
-
 
 
 def link_attrs(req, obj, **kw):

@@ -1,10 +1,10 @@
 from sqlalchemy import not_
 
-from clld.util import jsonload
+from clldutils.jsonlib import load as jsonload
 from clld.scripts.util import parsed_args
 from clld.db.meta import DBSession
 from clld.db.models.common import LanguageSource
-from clld.lib.dsv import reader, UnicodeWriter
+from csvw.dsv import reader, UnicodeWriter
 
 from asjp.models import Doculect
 

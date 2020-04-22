@@ -1,11 +1,9 @@
-from __future__ import unicode_literals
 from tempfile import mkdtemp
 from shutil import rmtree
 import os
 
 from sqlalchemy.orm import joinedload_all
 
-from clldutils.misc import binary_type
 from clld.db.meta import DBSession
 from clld.db.models.common import ValueSet, Language, Parameter, Dataset, Value
 from clld.web.adapters.base import Representation, Index
@@ -13,7 +11,7 @@ from clld.web.adapters.geojson import GeoJsonLanguages
 from clld.web.adapters.download import Download
 from clld.interfaces import ILanguage, IIndex, IDataset
 from clld.web.maps import SelectedLanguagesMap
-from clldutils.dsv import UnicodeWriter
+from csvw.dsv import UnicodeWriter
 
 from asjp.models import txt_header, Doculect
 
@@ -100,7 +98,7 @@ class Tab(Download):
                     for p in DBSession.query(Parameter).order_by(Parameter.pk)]
         tmp = mkdtemp()
         path = os.path.join(tmp, 'asjp.tab')
-        with UnicodeWriter(f=path, delimiter=binary_type("\t")) as writer:
+        with UnicodeWriter(f=path, delimiter=bytes("\t")) as writer:
             writer.writerow([f[0] for f in self.fields] + [m[0] for m in meanings])
             for lang in DBSession.query(Doculect).order_by(Doculect.pk).options(
                     joinedload_all(Language.valuesets, ValueSet.values),

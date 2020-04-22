@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 
+
 setup(
     name='asjp',
     version='0.0',
@@ -19,8 +20,8 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'clld>=4.2.2',
-        'clldmpg>=3.3.1',
+        'clld>=6',
+        'clldmpg>=3.5',
         'sqlalchemy',
         'waitress',
     ],

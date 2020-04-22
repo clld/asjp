@@ -1,6 +1,3 @@
-# coding: utf8
-from __future__ import unicode_literals
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import create_session
 from clld.db.meta import Base

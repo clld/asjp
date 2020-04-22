@@ -1,6 +1,6 @@
 # Releasing the ASJP Database
 
-The ASJP Database is updated infrequently (see http://asjp.clld.org/download).
+The ASJP Database is updated infrequently (see https://asjp.clld.org/download).
 Data for a new release comes in two files,
 - the wordlists in the ASJP format, in a file `listss<version>.txt`
 - the sources in an excel spreadsheet `sources_listss<version>.xlsx`
