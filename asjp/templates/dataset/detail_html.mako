@@ -11,7 +11,7 @@
         <a href="${request.route_url('help')}">Help link</a>
         for further instructions, and for more
         background visit
-        ${h.external_link('http://en.wikipedia.org/wiki/Automated_Similarity_Judgment_Program', label='Wikipedia')}.
+        ${h.external_link('https://en.wikipedia.org/wiki/Automated_Similarity_Judgment_Program', label='Wikipedia')}.
     </p>
 </div>
 
@@ -19,7 +19,7 @@
     <div class="span4 well well-small">
         <h3>How to cite:</h3>
         <p>
-            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2018. ${ctx.name} (version 18).
+            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2020. ${ctx.name} (version 19).
         </p>
     </div>
     <div class="span4" style="padding: 20px; text-align: center;">
@@ -53,9 +53,7 @@
             </tr>
             <tr>
                 <th>
-                    <a href="${request.route_url('contribute')}">
-                        Missing ISO 639-3 languages (from Ethnologue 17)
-                    </a>
+                    <a href="${request.route_url('contribute')}">Missing ISO 639-3 languages</a>
                 </th>
                 <td class="right">${missing_iso}</td>
             </tr>

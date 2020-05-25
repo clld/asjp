@@ -17,21 +17,17 @@
 <h2>Instructions</h2>
 
 <%util:section title="How to download the entire ASJP database" id="dl-database">
-    <ol>
-        <li>Click on <a href="${request.route_url('languages')}">Wordlists</a>.</li>
-        <li>Click on the download icon ${h.icon('download-alt')} near the upper right corner of the screen.</li>
-        <li>In the menu, click on ASJP text format and wait 30 sec or so.</li>
-    </ol>
-    <p>Alternatively,</p>
-    <ol>
-        <li>Click on <a href="${request.route_url('download')}">Download</a>.</li>
-        <li>Click on 017[ZIP].</li>
-        <li>Click on OK.</li>
-        <li>Double click on listss17 and wait 30 sec or so.</li>
-    </ol>
     <p>
-        Either way, you should get the complete database, set up to run on ASJP programs. Now you can
-        copy and paste whatever you want of this into a data file of your own. To find a particular
+        This web application serves the latest released version of
+        <a href="https://doi.org/10.5281/zenodo.3835822">
+            <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.3835822.svg" alt="DOI">
+        </a>.
+        The ASJP database in ASJP's txt format is included in the zip file provided as download at Zenodo
+        under the directory path <span style="font-family: monospace">raw/lists.txt</span>.
+    </p>
+    <p>
+        Now you can
+        copy and paste whatever you want of this txt file into a data file of your own. To find a particular
         language in the database, search for its ISO 639-3-code preceded by three spaces. The ISO
         639-3-code sits to the far right in the second line of each word list. There may be more than
         one list with the same ISO 639-3-code, representing different dialects or sources.

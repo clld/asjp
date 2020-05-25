@@ -7,7 +7,6 @@ import pytest
         ('get_html', '/'),
         ('get_html', '/contribute'),
         ('get_html', '/software'),
-        ('get', '/void.cldf.csv'),
         ('get_dt', '/parameters'),
         ('get_html', '/parameters'),
         ('get_html', '/parameters/1'),

@@ -12,6 +12,17 @@ from clld.db.models.common import Language, Parameter, Value
 from asjp.models import Doculect, Word
 from asjp.util import normalize_classification
 
+from clld.web.util import concepticon
+
+
+class ConcepticonCol(Col):
+    __kw__ = dict(bSortable=False, bSearchable=False)
+
+    def format(self, item):
+        return concepticon.link(
+            item.valueset.parameter.concepticon_id,
+            label=item.valueset.parameter.concepticon_gloss)
+
 
 class Words(Values):
     """Lists of words
@@ -36,6 +47,7 @@ class Words(Values):
                     self, 'meaning',
                     model_col=Parameter.name,
                     get_object=lambda i: i.valueset.parameter),
+                ConcepticonCol(self, 'concepticon'),
             ]
         return res + [
             Col(self, 'name', sTitle='Word', model_col=Value.name),

@@ -16,20 +16,20 @@
 
 <h4>Missing ISO 639-3 languages</h4>
 <p>
-    The following ${len(missing)} languages from Ethnologue 17 do not yet have wordlists
+    The following ${len(missing)} languages from ISO 639-3 do not yet have wordlists
     in ASJP:
 </p>
 <div style="float: left">
         <%util:table items="${missing}" args="item" class_="table table-nonfluid table-striped">
     <%def name="head()">
-        <th>ISO 639-3</th>
-        <th>Ethnologue 17 name</th>
+        <th>Code</th>
+        <th>Name</th>
     </%def>
         <td>
-            ${h.external_link("http://www-01.sil.org/iso639-3/documentation.asp?id=" + item[0], item[0])}
+            ${h.external_link("https://iso639-3.sil.org/code/" + item[0], item[0])}
         </td>
         <td>
-            ${h.external_link("http://www.ethnologue.com/language/" + item[0], item[1])}
+            ${h.external_link("https://iso639-3.sil.org/code/" + item[0], item[1])}
         </td>
     </%util:table>
 </div>
