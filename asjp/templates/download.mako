@@ -21,12 +21,12 @@
         <tbody>
         <tr>
             <td>19</td>
-            <td>2019</td>
+            <td>2020</td>
             <td>
                 <a href="https://doi.org/10.5281/zenodo.3843469">10.5281/zenodo.3843469</a>
             </td>
             <td>
-                Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2019. The ASJP Database (version 19).
+                Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2020. The ASJP Database (version 19).
             </td>
         </tr>
         <tr>
