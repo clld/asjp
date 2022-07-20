@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'clld>=8',
+        'clld>=9.2.1',
         'clldmpg>=4.2',
         'pyasjp',
         'sqlalchemy',
