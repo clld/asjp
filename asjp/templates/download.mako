@@ -20,6 +20,16 @@
         </thead>
         <tbody>
         <tr>
+            <td>20</td>
+            <td>2022</td>
+            <td>
+                <a href="https://doi.org/10.5281/zenodo.7079637">10.5281/zenodo.7079637</a>
+            </td>
+            <td>
+                Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2022. The ASJP Database (version 20).
+            </td>
+        </tr>
+        <tr>
             <td>19</td>
             <td>2020</td>
             <td>

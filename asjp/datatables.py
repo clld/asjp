@@ -87,6 +87,8 @@ class YesNoCol(Col):
 
 
 class Wordlists(Languages):
+    __toolbar_kw__ = {'dl_formats': {'txt': 'ASJP text format'}}
+
     def col_defs(self):
         return [
             LinkToMapCol(self, 'm'),

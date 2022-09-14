@@ -33,7 +33,7 @@
         one list with the same ISO 639-3-code, representing different dialects or sources.
     </p>
 </%util:section>
-<%util:section title="How to download a selection of wordlists" id="dl-selection">
+<%util:section title="How to download a selection of (up to 1500) wordlists" id="dl-selection">
     <p>
         Click on <a href="${request.route_url('languages')}">Wordlists</a>.
         In the search fields below the column headers you can enter your search criteria. The ISO 639-3 field
@@ -43,7 +43,7 @@
         languages with more than a million speakers. In the Classification Ethnologue and the Classification
         Glottolog fields you can insert a family or a subgroup of a phylogeny. For instance, inserting
         Indo-European,Baltic into Classification Ethnologue will give you Latvian and Lithuanian.
-        Clicking on the download icon and selecting ASJP text format, produces a file for these languages
+        Clicking on the "ASJP text format" button produces a file for these languages
         which can either be copied and pasted or saved using the browser’s file save option.
     </p>
 </%util:section>
