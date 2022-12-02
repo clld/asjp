@@ -38,9 +38,9 @@ def main(args):
         contact="wichmannsoeren@gmail.com",
         description="The Automated Similarity Judgment Program",
         domain='asjp.clld.org',
-        publisher_name="Max Planck Institute for the Science of Human History",
-        publisher_place="Jena",
-        publisher_url="https://www.shh.mpg.de",
+        publisher_name="Max Planck Institute for Evolutionary Anthropology",
+        publisher_place="Leipzig",
+        publisher_url="https://www.eva.mpg.de",
         license='https://creativecommons.org/licenses/by/4.0/',
         jsondata={
             'license_icon': 'cc-by.png',
