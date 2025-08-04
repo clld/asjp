@@ -19,7 +19,7 @@
     <div class="span4 well well-small">
         <h3>How to cite:</h3>
         <p>
-            Wichmann, Søren, Eric W. Holman, and Cecil H. Brown (eds.). 2022. ${ctx.name} (version 20).
+            Wichmann, Søren, Eric W. Holman, Cecil H. Brown, Matthew S. Dryer, and Qibin Ran (eds.). 2025. The ASJP Database (version 21).
         </p>
     </div>
     <div class="span4" style="padding: 20px; text-align: center;">
