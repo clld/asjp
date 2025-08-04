@@ -47,7 +47,7 @@ def main(args):
             'license_name': 'Creative Commons Attribution 4.0 International License'})
     DBSession.add(dataset)
 
-    editors = {'SW': 1, 'CB': 2, 'EH': 3}
+    editors = {'SW': 1, 'CB': 2, 'EH': 3, 'MSD': 4, 'QR': 5}
     for spec in list(asjp.transcribers.values()) + [Transcriber('EH', 'Eric W. Holman')]:
         contributor = data.add(common.Contributor, spec.name, id=spec.id, name=spec.name)
         if spec.id in editors:

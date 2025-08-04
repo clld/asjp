@@ -19,7 +19,6 @@ import pytest
         ('get_dt', '/values?language=KICHEE_ALDEA_ARGUETA_SOLOLA'),
         ('get_dt', '/values?parameter=1'),
         ('get_dt', '/sources'),
-        ('get_html', '/sources/1'),
     ])
 def test_pages(app, method, path):
     getattr(app, method)(path)

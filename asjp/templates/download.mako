@@ -20,6 +20,16 @@
         </thead>
         <tbody>
         <tr>
+            <td>21</td>
+            <td>2025</td>
+            <td>
+                <a href="https://doi.org/10.5281/zenodo.16736409">10.5281/zenodo.16736409</a>
+            </td>
+            <td>
+                Wichmann, Søren, Eric W. Holman, Cecil H. Brown, Matthew S. Dryer, and Qibin Ran (eds.). 2025. The ASJP Database (version 21).
+            </td>
+        </tr>
+        <tr>
             <td>20</td>
             <td>2022</td>
             <td>

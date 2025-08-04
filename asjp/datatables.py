@@ -59,7 +59,7 @@ class IsoCol(Col):
     __kw__ = dict(sTitle='ISO 639-3', input_size='mini')
 
     def search(self, qs):
-        whitespace = re.compile('\s+')
+        whitespace = re.compile(r'\s+')
         if whitespace.search(qs):
             return or_(*[
                 Doculect.code_iso == q.strip() for q in whitespace.split(qs.lower())])
