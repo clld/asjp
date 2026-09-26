@@ -1,5 +1,6 @@
 import re
 import pathlib
+import mimetypes
 
 from clld.cliutil import Data, bibtex2source
 from clld.db.meta import DBSession
@@ -12,7 +13,7 @@ from pyasjp.meanings import MEANINGS, MEANINGS_ALL
 from asjp import models
 
 
-def add_codes(lang):
+def add_codes(lang):  # pragma: no cover
     for attr, prefix in dict(wals='wals_code_', iso='', glottolog='').items():
         code = getattr(lang, 'code_' + attr)
         if code:
@@ -28,7 +29,7 @@ def add_codes(lang):
             common.LanguageIdentifier(identifier=identifier, language=lang)
 
 
-def main(args):
+def main(args):  # pragma: no cover
     asjp = ASJP(args.cldf.tablegroup._fname.parent / '..' / 'raw')
     data = Data()
 
@@ -46,6 +47,12 @@ def main(args):
             'license_icon': 'cc-by.png',
             'license_name': 'Creative Commons Attribution 4.0 International License'})
     DBSession.add(dataset)
+    #
+    # store s3 URLs for files in MediaTable.
+    #
+    for row in args.cldf['MediaTable']:
+        row['s3url'] = f'https://s3.nexus.mpcdf.mpg.de/eva-dlce-asjp/{row["ID"]}{mimetypes.guess_extension(row["Media_Type"])}'
+        DBSession.add(common.Config(key=row['ID'], jsondata=row, value=row['Name']))
 
     editors = {'SW': 1, 'CB': 2, 'EH': 3, 'MSD': 4, 'QR': 5}
     for spec in list(asjp.transcribers.values()) + [Transcriber('EH', 'Eric W. Holman')]:
@@ -135,7 +142,7 @@ def main(args):
                 common.LanguageSource(language_pk=lang.pk, source_pk=data['Source'][source].pk))
 
 
-def prime_cache(args):
+def prime_cache(args):  # pragma: no cover
     """If data needs to be denormalized for lookup, do that here.
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
@@ -147,7 +154,7 @@ def prime_cache(args):
         if dl.code_iso:
             existing.add(dl.code_iso)
 
-    iso = ISO(pathlib.Path(input('iso tables zipped: ')))
+    iso = ISO(pathlib.Path(input('iso tables zipped: ') or '../../glottolog/glottolog/build/iso-639-3_Code_Tables_20260715.zip'))
     for lang in iso.languages:
         if ('Sign Language' not in lang.name) and (lang.code not in existing):
             DBSession.add(common.Config(key='iso', value=lang.code, jsondata=dict(name=lang.name)))

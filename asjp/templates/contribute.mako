@@ -6,10 +6,10 @@
     Donations of data are welcome and we also invite more extended collaboration with
     interested parties.
     If you would like to contribute 40-item lists, please download these
-    <a href="${request.static_url('asjp:static/Guidelines.pdf')}">brief guidelines</a>
-    and use this <a href="${request.static_url('asjp:static/EnglishTemplate.doc')}">English
+    <a href="${files['Guidelines.pdf']}">brief guidelines</a>
+    and use this <a href="${files['EnglishTemplate.doc']}">English
     template</a>
-    or this <a href="${request.static_url('asjp:static/SpanishTemplate.doc')}">Spanish
+    or this <a href="${files['SpanishTemplate.doc']}">Spanish
     template</a>
     when filling in data (both are MS Word files).
 </p>

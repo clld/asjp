@@ -3,8 +3,27 @@ import re
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.web.util.helpers import get_referents
+from clld.web.util.htmllib import HTML
 
 from asjp import models
+
+
+def wlt_rows(req):
+    trs = []
+    for cfg in DBSession.query(common.Config).filter(common.Config.value.in_([
+        'WorldLanguageTree-001.pdf',
+        'WorldLanguageTree-002.pdf',
+        'WorldLanguageTree-003.pdf',
+        'WorldLanguageTree-004.zip',
+        'WorldLanguageTree-005.zip',
+    ])):
+        i = cfg.jsondata
+        trs.append(HTML.tr(
+            HTML.td(HTML.a(cfg.value, href=i['s3url'])),
+            HTML.td(i['Year']),
+            HTML.td(i['Citation'])))
+
+    return HTML.tbody(*trs)
 
 
 def normalize_classification(text, type=None):

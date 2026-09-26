@@ -126,51 +126,5 @@
         <thead>
             <tr><th>Version no.</th><th>Year</th><th>Cite as</th></tr>
         </thead>
-        <tbody>
-            <tr>
-                <td>
-                    <a href="${request.static_url('asjp:static/WorldLanguageTree-001.pdf')}">001 [PDF]</a>
-                </td>
-                <td>2009</td>
-                <td>
-                    André Müller, Viveka Velupillai, Søren Wichmann, Cecil H. Brown, Pamela Brown, Eric W. Holman, Dik Bakker, Oleg Belyaev, Dmitri Egorov, Robert Mailhammer, Anthony Grant, and Kofi Yakpo. 2009. ASJP World Language Tree: Version 1 (April 2009).
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="${request.static_url('asjp:static/WorldLanguageTree-002.pdf')}">002 [PDF]</a>
-                </td>
-                <td>2009</td>
-                <td>
-                    André Müller, Viveka Velupillai, Søren Wichmann, Cecil H. Brown, Pamela Brown, Eric W. Holman, Dik Bakker, Oleg Belyaev, Dmitri Egorov, Robert Mailhammer, Anthony Grant, and Kofi Yakpo. 2009. ASJP World Language Tree of Lexical Similarity: Version 2 (April 2009).
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="${request.static_url('asjp:static/WorldLanguageTree-003.pdf')}">003 [PDF]</a>
-                </td>
-                <td>2010</td>
-                <td>
-                    Müller, André, Søren Wichmann, Viveka Velupillai, Cecil H. Brown, Pamela Brown, Sebastian Sauppe, Eric W. Holman, Dik Bakker, Johann-Mattis List, Dmitri Egorov, Oleg Belyaev, Robert Mailhammer, Matthias Urban, Helen Geyer, and Anthony Grant. 2010. ASJP World Language Tree of Lexical Similarity: Version 3 (July 2010).
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="${request.static_url('asjp:static/WorldLanguageTree-004.zip')}">004 [ZIP]</a>
-                </td>
-                <td>2013</td>
-                <td>
-                    Müller, André, Viveka Velupillai, Søren Wichmann, Cecil H. Brown, Eric W. Holman, Sebastian Sauppe, Pamela Brown, Harald Hammarström, Oleg Belyaev, Johann-Mattis List, Dik Bakker, Dmitri Egorov, Matthias Urban, Robert Mailhammer, Matthew S. Dryer, Evgenia Korovina, David Beck, Helen Geyer, Pattie Epps, Anthony Grant, and Pilar Valenzuela. 2013. ASJP World Language Trees of Lexical Similarity: Version 4 (October 2013).
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <a href="${request.static_url('asjp:static/WorldLanguageTree-005.zip')}">005 [ZIP]</a>
-                </td>
-                <td>2021</td>
-                <td>
-Müller, André, Viveka Velupillai, Søren Wichmann, Cecil H. Brown, Eric W. Holman, Sebastian Sauppe, Pamela Brown, Harald Hammarström, Oleg Belyaev, Johann-Mattis List, Dik Bakker, Dmitri Egorov, Matthias Urban, Robert Mailhammer, Matthew S. Dryer, Evgenia Korovina, David Beck, Helen Geyer, Pattie Epps, Anthony Grant, and Pilar Valenzuela. 2021. ASJP World Language Trees of Lexical Similarity: Version 5 (October 2021).
-                </td>
-            </tr>
-        </tbody>
+        ${u.wlt_rows(request)|n}
     </table>
