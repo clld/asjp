@@ -23,6 +23,7 @@ setup(
         'clld>=9.2.2',
         'clldmpg>=4.3',
         'pyasjp',
+        'cldfcatalog',
         'sqlalchemy',
         'waitress',
     ],
