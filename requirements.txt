@@ -62,7 +62,7 @@ referencing==0.37.0
 rfc3986==1.5.0
 rpds-py==2026.9.1
 selenium==4.50.0
-setuptools==80.10.2
+setuptools==83.0.0
 simplepybtex==0.1.0
 six==1.17.0
 smmap==5.0.3
