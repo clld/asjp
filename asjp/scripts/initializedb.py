@@ -154,7 +154,7 @@ def prime_cache(args):  # pragma: no cover
         if dl.code_iso:
             existing.add(dl.code_iso)
 
-    iso = ISO(pathlib.Path(input('iso tables zipped: ') or '../../glottolog/glottolog/build/iso-639-3_Code_Tables_20260715.zip'))
+    iso = ISO(pathlib.Path(input('iso tables zipped: ') or '../iso-639-3_Code_Tables_20261015.zip'))
     for lang in iso.languages:
         if ('Sign Language' not in lang.name) and (lang.code not in existing):
             DBSession.add(common.Config(key='iso', value=lang.code, jsondata=dict(name=lang.name)))
