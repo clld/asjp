@@ -1,5 +1,6 @@
 import re
 
+from sqlalchemy import text
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.web.util.helpers import get_referents
@@ -69,7 +70,7 @@ count | 4401
         .filter(common.Identifier.type == common.IdentifierType.iso.value).distinct()
         .count(),
         'synsets': DBSession.execute(
-            'select count(*) from (select distinct valueset_pk from value) as s')
+            text('select count(*) from (select distinct valueset_pk from value) as s'))
         .fetchone()[0],
         'words': DBSession.query(common.Value.pk).count(),
         'missing_iso': DBSession.query(common.Config).filter(common.Config.key == 'iso').count(),

@@ -6,6 +6,7 @@ from clld.cliutil import Data, bibtex2source
 from clld.db.meta import DBSession
 from clld.db.models import common
 from clld.lib.bibtex import Database
+from clldutils.iso_639_3 import ISO
 from pyasjp import ASJP
 from pyasjp.models import Transcriber
 from pyasjp.meanings import MEANINGS, MEANINGS_ALL
@@ -30,7 +31,7 @@ def add_codes(lang):  # pragma: no cover
 
 
 def main(args):  # pragma: no cover
-    asjp = ASJP(args.cldf.tablegroup._fname.parent / '..' / 'raw')
+    asjp = ASJP(args.cldf.directory / '..' / 'raw')
     data = Data()
 
     dataset = common.Dataset(
@@ -125,17 +126,18 @@ def main(args):  # pragma: no cover
                 language=lang,
                 contribution=contrib,
                 parameter=data['Meaning'][synset.meaning_id])
+            DBSession.add(vs)
 
             for i, word in enumerate(synset.words):
-                models.Word(id='%s-%s' % (vsid, i + 1), name=word.form, valueset=vs, loan=word.loan)
+                DBSession.add(models.Word(id='%s-%s' % (vsid, i + 1), name=word.form, valueset=vs, loan=word.loan))
 
         DBSession.flush()
         if cldf_lang['transcribers']:
             for i, transcriber in enumerate(cldf_lang['transcribers'].split(' and ')):
-                common.ContributionContributor(
+                DBSession.add(common.ContributionContributor(
                     contribution=contrib,
                     contributor=data['Contributor'][transcriber],
-                    ord=i + 1)
+                    ord=i + 1))
 
         for source in cldf_sources.get(l.id, []):
             DBSession.add(
@@ -147,14 +149,18 @@ def prime_cache(args):  # pragma: no cover
     This procedure should be separate from the db initialization, because
     it will have to be run periodiucally whenever data has been updated.
     """
-    from clldutils.iso_639_3 import ISO
-
     existing = set()
     for dl in DBSession.query(models.Doculect):
         if dl.code_iso:
             existing.add(dl.code_iso)
 
-    iso = ISO(pathlib.Path(input('iso tables zipped: ') or '../iso-639-3_Code_Tables_20261015.zip'))
+    if args.assume_yes:
+        isozips = sorted(
+            pathlib.Path('.').glob('iso-639-3_Code_Tables*.zip'), key=lambda p: p.stem)
+        assert isozips, f'No ISO Code Tables found in .'
+        iso = ISO(isozips[-1])
+    else:
+        iso = ISO(pathlib.Path(input('iso tables zipped: ') or '../iso-639-3_Code_Tables_20261015.zip'))
     for lang in iso.languages:
         if ('Sign Language' not in lang.name) and (lang.code not in existing):
             DBSession.add(common.Config(key='iso', value=lang.code, jsondata=dict(name=lang.name)))

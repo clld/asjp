@@ -1,5 +1,4 @@
 <%inherit file="home_comp.mako"/>
-<%namespace name="clldmpgutil" file="clldmpg_util.mako"/>
 <%namespace name="util" file="util.mako"/>
 
 
